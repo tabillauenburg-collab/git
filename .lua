@@ -1,276 +1,364 @@
---// Lion ESP (Box, Name, Skeleton, Line) für Roblox Executor
---// FIXED: Box-Höhe jetzt korrekt (Kopf bis Füße)
+--// LION ESP ULTIMATE - R6/R15 KOMPATIBEL //--
+--// Box, Name, Healthbar, Skeleton, Traceline
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
--- Einstellungen (optional anpassbar)
+--// EINSTELLUNGEN //--
 local SETTINGS = {
     BoxColor = Color3.fromRGB(255, 255, 255),
-    NameColor = Color3.fromRGB(255, 255, 255),
-    SkeletonColor = Color3.fromRGB(255, 255, 255),
-    LineColor = Color3.fromRGB(255, 0, 0),
-    Transparency = 1,
-    Thickness = 1,
-    NameSize = 13,
     BoxThickness = 1,
+    Transparency = 1,
+    NameColor = Color3.fromRGB(255, 255, 255),
+    NameSize = 14,
+    HealthBarWidth = 40,
+    HealthBarHeight = 4,
+    HealthBarPosition = "Right", -- "Left" oder "Right"
+    LowHealthColor = Color3.fromRGB(255, 0, 0),
+    MidHealthColor = Color3.fromRGB(255, 255, 0),
+    HighHealthColor = Color3.fromRGB(0, 255, 0),
+    SkeletonColor = Color3.fromRGB(255, 255, 255),
     SkeletonThickness = 1,
+    LineColor = Color3.fromRGB(255, 0, 0),
     LineThickness = 1
 }
 
--- Container für alle Zeichnungen pro Spieler
-local playerESP = {}
+--// SPEICHER //--
+local espObjects = {}
 
-local function createESP(player)
-    local drawings = {}
-    local box = Drawing.new("Square")
-    box.Color = SETTINGS.BoxColor
-    box.Transparency = SETTINGS.Transparency
-    box.Thickness = SETTINGS.BoxThickness
-    box.Filled = false
-    box.Visible = false
-    drawings.Box = box
-
-    local nameTag = Drawing.new("Text")
-    nameTag.Color = SETTINGS.NameColor
-    nameTag.Transparency = SETTINGS.Transparency
-    nameTag.Size = SETTINGS.NameSize
-    nameTag.Center = true
-    nameTag.Outline = true
-    nameTag.Visible = false
-    drawings.NameTag = nameTag
-
-    drawings.SkeletonLines = {}
-
-    local targetLine = Drawing.new("Line")
-    targetLine.Color = SETTINGS.LineColor
-    targetLine.Transparency = SETTINGS.Transparency
-    targetLine.Thickness = SETTINGS.LineThickness
-    targetLine.Visible = false
-    drawings.TargetLine = targetLine
-
-    playerESP[player] = drawings
-end
-
-local function removeESP(player)
-    local drawings = playerESP[player]
-    if drawings then
-        if drawings.Box then drawings.Box:Remove() end
-        if drawings.NameTag then drawings.NameTag:Remove() end
-        if drawings.SkeletonLines then
-            for _, line in pairs(drawings.SkeletonLines) do
-                line:Remove()
-            end
-        end
-        if drawings.TargetLine then drawings.TargetLine:Remove() end
-        playerESP[player] = nil
-    end
-end
-
--- 🟢 NEU: Ermittelt die tatsächliche Höhe des Spielers (Kopf bis tiefster Fuß)
-local function getPlayerHeight(character)
+--// HILFSFUNKTION: Höhe des Spielers (Kopf bis Fuß) für JEDES Modell //--
+local function getPlayerTopAndBottom(character)
     local head = character:FindFirstChild("Head")
-    if not head then return nil end
+    if not head then return nil, nil end
     
-    local highestY = head.Position.Y
-    local lowestY = head.Position.Y  -- Startwert
+    local highestY = head.Position.Y + (head.Size.Y / 2)
+    local lowestY = head.Position.Y - (head.Size.Y / 2)
     
-    -- Alle Teile des Charakters durchsuchen
-    local parts = character:GetDescendants()
-    for _, part in ipairs(parts) do
-        if part:IsA("BasePart") then
-            local partMinY = part.Position.Y - (part.Size.Y / 2)
-            local partMaxY = part.Position.Y + (part.Size.Y / 2)
-            if partMaxY > highestY then highestY = partMaxY end
-            if partMinY < lowestY then lowestY = partMinY end
+    -- Alle Teile durchgehen für maximale Genauigkeit
+    for _, part in ipairs(character:GetDescendants()) do
+        if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+            local partTop = part.Position.Y + (part.Size.Y / 2)
+            local partBottom = part.Position.Y - (part.Size.Y / 2)
+            if partTop > highestY then highestY = partTop end
+            if partBottom < lowestY then lowestY = partBottom end
         end
     end
     
-    return highestY - lowestY, highestY, lowestY
+    return highestY, lowestY
 end
 
-local function getBonePositions(character)
-    local head = character:FindFirstChild("Head")
-    local torso = character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso")
-    local lowerTorso = character:FindFirstChild("LowerTorso")
-    local leftShoulder = character:FindFirstChild("LeftUpperArm") or character:FindFirstChild("Left Arm")
-    local leftElbow = character:FindFirstChild("LeftLowerArm")
-    local leftHand = character:FindFirstChild("LeftHand")
-    local rightShoulder = character:FindFirstChild("RightUpperArm") or character:FindFirstChild("Right Arm")
-    local rightElbow = character:FindFirstChild("RightLowerArm")
-    local rightHand = character:FindFirstChild("RightHand")
-    local leftHip = character:FindFirstChild("LeftUpperLeg") or character:FindFirstChild("Left Leg")
-    local leftKnee = character:FindFirstChild("LeftLowerLeg")
-    local leftFoot = character:FindFirstChild("LeftFoot")
-    local rightHip = character:FindFirstChild("RightUpperLeg") or character:FindFirstChild("Right Leg")
-    local rightKnee = character:FindFirstChild("RightLowerLeg")
-    local rightFoot = character:FindFirstChild("RightFoot")
+--// FARBE JE HEALTH //--
+local function getHealthColor(health, maxHealth)
+    local percent = health / maxHealth
+    if percent <= 0.3 then
+        return SETTINGS.LowHealthColor
+    elseif percent <= 0.7 then
+        local t = (percent - 0.3) / 0.4
+        return SETTINGS.LowHealthColor:Lerp(SETTINGS.MidHealthColor, t)
+    else
+        local t = (percent - 0.7) / 0.3
+        return SETTINGS.MidHealthColor:Lerp(SETTINGS.HighHealthColor, t)
+    end
+end
 
-    return {
-        Head = head and head.Position,
-        Torso = torso and torso.Position,
-        LowerTorso = lowerTorso and lowerTorso.Position,
-        LeftShoulder = leftShoulder and leftShoulder.Position,
-        LeftElbow = leftElbow and leftElbow.Position,
-        LeftHand = leftHand and leftHand.Position,
-        RightShoulder = rightShoulder and rightShoulder.Position,
-        RightElbow = rightElbow and rightElbow.Position,
-        RightHand = rightHand and rightHand.Position,
-        LeftHip = leftHip and leftHip.Position,
-        LeftKnee = leftKnee and leftKnee.Position,
-        LeftFoot = leftFoot and leftFoot.Position,
-        RightHip = rightHip and rightHip.Position,
-        RightKnee = rightKnee and rightKnee.Position,
-        RightFoot = rightFoot and rightFoot.Position
+--// NEUER SPIELER //--
+local function addPlayer(player)
+    if player == LocalPlayer then return end
+    
+    local drawings = {
+        Box = Drawing.new("Square"),
+        Name = Drawing.new("Text"),
+        HealthBar = Drawing.new("Line"),
+        HealthBg = Drawing.new("Line"),
+        Traceline = Drawing.new("Line"),
+        Skeleton = {}
     }
+    
+    drawings.Box.Color = SETTINGS.BoxColor
+    drawings.Box.Thickness = SETTINGS.BoxThickness
+    drawings.Box.Filled = false
+    drawings.Box.Transparency = SETTINGS.Transparency
+    drawings.Box.Visible = false
+    
+    drawings.Name.Color = SETTINGS.NameColor
+    drawings.Name.Size = SETTINGS.NameSize
+    drawings.Name.Center = true
+    drawings.Name.Outline = true
+    drawings.Name.Transparency = SETTINGS.Transparency
+    drawings.Name.Visible = false
+    
+    drawings.HealthBar.Color = SETTINGS.HighHealthColor
+    drawings.HealthBar.Thickness = SETTINGS.HealthBarHeight
+    drawings.HealthBar.Transparency = SETTINGS.Transparency
+    drawings.HealthBar.Visible = false
+    
+    drawings.HealthBg.Color = Color3.fromRGB(50, 50, 50)
+    drawings.HealthBg.Thickness = SETTINGS.HealthBarHeight
+    drawings.HealthBg.Transparency = SETTINGS.Transparency
+    drawings.HealthBg.Visible = false
+    
+    drawings.Traceline.Color = SETTINGS.LineColor
+    drawings.Traceline.Thickness = SETTINGS.LineThickness
+    drawings.Traceline.Transparency = SETTINGS.Transparency
+    drawings.Traceline.Visible = false
+    
+    espObjects[player] = drawings
 end
 
-local function updateESP()
-    for player, drawings in pairs(playerESP) do
-        local character = player.Character
-        local humanoid = character and character:FindFirstChildWhichIsA("Humanoid")
-        local rootPart = character and character:FindFirstChild("HumanoidRootPart")
-        local head = character and character:FindFirstChild("Head")
-
-        if not character or not humanoid or not rootPart or not head then
-            drawings.Box.Visible = false
-            drawings.NameTag.Visible = false
-            drawings.TargetLine.Visible = false
-            for _, line in pairs(drawings.SkeletonLines) do
-                line.Visible = false
-            end
-            goto continue
-        end
-
-        -- 🟢 NEUE Box-Berechnung mit korrekter Höhe
-        local height, topY, bottomY = getPlayerHeight(character)
-        if height and topY and bottomY then
-            -- Höhe auf Bildschirm projizieren
-            local topWorld = Vector3.new(rootPart.Position.X, topY, rootPart.Position.Z)
-            local bottomWorld = Vector3.new(rootPart.Position.X, bottomY, rootPart.Position.Z)
-            
-            local topScreen, onScreenTop = Camera:WorldToViewportPoint(topWorld)
-            local bottomScreen, onScreenBot = Camera:WorldToViewportPoint(bottomWorld)
-            
-            if onScreenTop and onScreenBot then
-                local boxHeight = math.abs(topScreen.Y - bottomScreen.Y)
-                local boxWidth = boxHeight * 0.55  -- etwas breiter für realistischere Box
-                local boxX = bottomScreen.X - boxWidth / 2
-                local boxY = topScreen.Y
-                
-                drawings.Box.Visible = true
-                drawings.Box.Position = Vector2.new(boxX, boxY)
-                drawings.Box.Size = Vector2.new(boxWidth, boxHeight)
-                
-                -- Namenslabel über dem Kopf
-                drawings.NameTag.Visible = true
-                drawings.NameTag.Text = player.Name
-                drawings.NameTag.Position = Vector2.new(bottomScreen.X, topScreen.Y - 20)
-            else
-                drawings.Box.Visible = false
-                drawings.NameTag.Visible = false
-            end
-        else
-            drawings.Box.Visible = false
-            drawings.NameTag.Visible = false
-        end
-
-        -- Line zum LocalPlayer (bleibt gleich)
-        if player ~= LocalPlayer then
-            local localChar = LocalPlayer.Character
-            local localRoot = localChar and localChar:FindFirstChild("HumanoidRootPart")
-            if localRoot then
-                local localPos = localRoot.Position
-                local localScreen, localOn = Camera:WorldToViewportPoint(localPos)
-                local targetScreen, targetOn = Camera:WorldToViewportPoint(rootPart.Position)
-                if localOn and targetOn then
-                    drawings.TargetLine.Visible = true
-                    drawings.TargetLine.From = Vector2.new(localScreen.X, localScreen.Y)
-                    drawings.TargetLine.To = Vector2.new(targetScreen.X, targetScreen.Y)
-                else
-                    drawings.TargetLine.Visible = false
-                end
-            else
-                drawings.TargetLine.Visible = false
-            end
-        else
-            drawings.TargetLine.Visible = false
-        end
-
-        -- Skeleton (gleich wie bisher)
-        local bones = getBonePositions(character)
-        local boneConnections = {
-            {"Head", "Torso"},
-            {"Torso", "LeftShoulder"},
-            {"LeftShoulder", "LeftElbow"},
-            {"LeftElbow", "LeftHand"},
-            {"Torso", "RightShoulder"},
-            {"RightShoulder", "RightElbow"},
-            {"RightElbow", "RightHand"},
-            {"Torso", "LowerTorso"},
-            {"LowerTorso", "LeftHip"},
-            {"LeftHip", "LeftKnee"},
-            {"LeftKnee", "LeftFoot"},
-            {"LowerTorso", "RightHip"},
-            {"RightHip", "RightKnee"},
-            {"RightKnee", "RightFoot"}
-        }
-
-        while #drawings.SkeletonLines < #boneConnections do
-            local line = Drawing.new("Line")
-            line.Color = SETTINGS.SkeletonColor
-            line.Transparency = SETTINGS.Transparency
-            line.Thickness = SETTINGS.SkeletonThickness
-            line.Visible = false
-            table.insert(drawings.SkeletonLines, line)
-        end
-        while #drawings.SkeletonLines > #boneConnections do
-            local line = table.remove(drawings.SkeletonLines)
+--// SPIELER ENTFERNEN //--
+local function removePlayer(player)
+    local drawings = espObjects[player]
+    if drawings then
+        drawings.Box:Remove()
+        drawings.Name:Remove()
+        drawings.HealthBar:Remove()
+        drawings.HealthBg:Remove()
+        drawings.Traceline:Remove()
+        for _, line in pairs(drawings.Skeleton) do
             line:Remove()
         end
+        espObjects[player] = nil
+    end
+end
 
-        for i, connection in ipairs(boneConnections) do
-            local bone1, bone2 = connection[1], connection[2]
-            local pos1 = bones[bone1]
-            local pos2 = bones[bone2]
-            local line = drawings.SkeletonLines[i]
-            if pos1 and pos2 then
-                local screen1, on1 = Camera:WorldToViewportPoint(pos1)
-                local screen2, on2 = Camera:WorldToViewportPoint(pos2)
-                if on1 and on2 then
-                    line.Visible = true
-                    line.From = Vector2.new(screen1.X, screen1.Y)
-                    line.To = Vector2.new(screen2.X, screen2.Y)
-                else
-                    line.Visible = false
-                end
+--// SKELETON KONFIGURATION (R6 + R15 KOMPATIBEL) //--
+local function getSkeletonBones(character)
+    local bones = {}
+    
+    -- Kopf
+    local head = character:FindFirstChild("Head")
+    if head then bones.Head = head.Position end
+    
+    -- Rumpf (R15: UpperTorso, R6: Torso)
+    local torso = character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso")
+    if torso then bones.Torso = torso.Position end
+    
+    -- Unterer Rumpf (nur R15)
+    local lowerTorso = character:FindFirstChild("LowerTorso")
+    if lowerTorso then bones.LowerTorso = lowerTorso.Position end
+    
+    -- Arme (R15: LeftUpperArm, RightUpperArm | R6: Left Arm, Right Arm)
+    local leftArm = character:FindFirstChild("LeftUpperArm") or character:FindFirstChild("Left Arm")
+    local rightArm = character:FindFirstChild("RightUpperArm") or character:FindFirstChild("Right Arm")
+    if leftArm then bones.LeftArm = leftArm.Position end
+    if rightArm then bones.RightArm = rightArm.Position end
+    
+    -- Unterarme (nur R15)
+    local leftForearm = character:FindFirstChild("LeftLowerArm")
+    local rightForearm = character:FindFirstChild("RightLowerArm")
+    if leftForearm then bones.LeftForearm = leftForearm.Position end
+    if rightForearm then bones.RightForearm = rightForearm.Position end
+    
+    -- Hände
+    local leftHand = character:FindFirstChild("LeftHand")
+    local rightHand = character:FindFirstChild("RightHand")
+    if leftHand then bones.LeftHand = leftHand.Position end
+    if rightHand then bones.RightHand = rightHand.Position end
+    
+    -- Beine (R15: LeftUpperLeg, RightUpperLeg | R6: Left Leg, Right Leg)
+    local leftLeg = character:FindFirstChild("LeftUpperLeg") or character:FindFirstChild("Left Leg")
+    local rightLeg = character:FindFirstChild("RightUpperLeg") or character:FindFirstChild("Right Leg")
+    if leftLeg then bones.LeftLeg = leftLeg.Position end
+    if rightLeg then bones.RightLeg = rightLeg.Position end
+    
+    -- Unterschenkel (nur R15)
+    local leftLowerLeg = character:FindFirstChild("LeftLowerLeg")
+    local rightLowerLeg = character:FindFirstChild("RightLowerLeg")
+    if leftLowerLeg then bones.LeftLowerLeg = leftLowerLeg.Position end
+    if rightLowerLeg then bones.RightLowerLeg = rightLowerLeg.Position end
+    
+    -- Füße
+    local leftFoot = character:FindFirstChild("LeftFoot")
+    local rightFoot = character:FindFirstChild("RightFoot")
+    if leftFoot then bones.LeftFoot = leftFoot.Position end
+    if rightFoot then bones.RightFoot = rightFoot.Position end
+    
+    return bones
+end
+
+local function getSkeletonConnections(bones)
+    local conns = {}
+    
+    -- Kopf <-> Rumpf
+    if bones.Head and bones.Torso then table.insert(conns, {bones.Head, bones.Torso}) end
+    
+    -- Rumpf <-> Arme
+    if bones.Torso and bones.LeftArm then table.insert(conns, {bones.Torso, bones.LeftArm}) end
+    if bones.Torso and bones.RightArm then table.insert(conns, {bones.Torso, bones.RightArm}) end
+    
+    -- Arme <-> Unterarme (R15)
+    if bones.LeftArm and bones.LeftForearm then table.insert(conns, {bones.LeftArm, bones.LeftForearm}) end
+    if bones.RightArm and bones.RightForearm then table.insert(conns, {bones.RightArm, bones.RightForearm}) end
+    
+    -- Unterarme <-> Hände (R15)
+    if bones.LeftForearm and bones.LeftHand then table.insert(conns, {bones.LeftForearm, bones.LeftHand}) end
+    if bones.RightForearm and bones.RightHand then table.insert(conns, {bones.RightForearm, bones.RightHand}) end
+    
+    -- Rumpf <-> unterer Rumpf (R15)
+    if bones.Torso and bones.LowerTorso then table.insert(conns, {bones.Torso, bones.LowerTorso}) end
+    
+    -- unterer Rumpf <-> Beine (R15) oder Rumpf <-> Beine (R6)
+    if bones.LowerTorso then
+        if bones.LeftLeg then table.insert(conns, {bones.LowerTorso, bones.LeftLeg}) end
+        if bones.RightLeg then table.insert(conns, {bones.LowerTorso, bones.RightLeg}) end
+    elseif bones.Torso then
+        if bones.LeftLeg then table.insert(conns, {bones.Torso, bones.LeftLeg}) end
+        if bones.RightLeg then table.insert(conns, {bones.Torso, bones.RightLeg}) end
+    end
+    
+    -- Beine <-> Unterschenkel (R15)
+    if bones.LeftLeg and bones.LeftLowerLeg then table.insert(conns, {bones.LeftLeg, bones.LeftLowerLeg}) end
+    if bones.RightLeg and bones.RightLowerLeg then table.insert(conns, {bones.RightLeg, bones.RightLowerLeg}) end
+    
+    -- Unterschenkel <-> Füße (R15) oder Beine <-> Füße (R6)
+    if bones.LeftLowerLeg and bones.LeftFoot then
+        table.insert(conns, {bones.LeftLowerLeg, bones.LeftFoot})
+    elseif bones.LeftLeg and bones.LeftFoot then
+        table.insert(conns, {bones.LeftLeg, bones.LeftFoot})
+    end
+    
+    if bones.RightLowerLeg and bones.RightFoot then
+        table.insert(conns, {bones.RightLowerLeg, bones.RightFoot})
+    elseif bones.RightLeg and bones.RightFoot then
+        table.insert(conns, {bones.RightLeg, bones.RightFoot})
+    end
+    
+    return conns
+end
+
+--// MAIN UPDATE //--
+local function updateESP()
+    for player, drawings in pairs(espObjects) do
+        local character = player.Character
+        local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+        local rootPart = character and character:FindFirstChild("HumanoidRootPart")
+        
+        if not character or not humanoid or not rootPart or humanoid.Health <= 0 then
+            drawings.Box.Visible = false
+            drawings.Name.Visible = false
+            drawings.HealthBar.Visible = false
+            drawings.HealthBg.Visible = false
+            drawings.Traceline.Visible = false
+            for _, line in pairs(drawings.Skeleton) do
+                line.Visible = false
+            end
+            goto nextPlayer
+        end
+        
+        -- TOP & BOTTOM für Box (WELT -> BILDSCHIRM)
+        local topY, bottomY = getPlayerTopAndBottom(character)
+        if not topY or not bottomY then
+            drawings.Box.Visible = false
+            goto nextPlayer
+        end
+        
+        local headPos = character.Head.Position
+        local topWorld = Vector3.new(headPos.X, topY, headPos.Z)
+        local bottomWorld = Vector3.new(headPos.X, bottomY, headPos.Z)
+        
+        local topScreen, topVis = Camera:WorldToViewportPoint(topWorld)
+        local bottomScreen, bottomVis = Camera:WorldToViewportPoint(bottomWorld)
+        
+        if not topVis or not bottomVis then
+            drawings.Box.Visible = false
+            drawings.Name.Visible = false
+            drawings.HealthBar.Visible = false
+            drawings.HealthBg.Visible = false
+            goto nextPlayer
+        end
+        
+        -- BOX
+        local boxHeight = math.abs(topScreen.Y - bottomScreen.Y)
+        local boxWidth = boxHeight * 0.55
+        local boxX = bottomScreen.X - boxWidth / 2
+        local boxY = topScreen.Y
+        
+        drawings.Box.Visible = true
+        drawings.Box.Position = Vector2.new(boxX, boxY)
+        drawings.Box.Size = Vector2.new(boxWidth, boxHeight)
+        
+        -- NAME (über der Box)
+        drawings.Name.Visible = true
+        drawings.Name.Text = player.Name
+        drawings.Name.Position = Vector2.new(bottomScreen.X, topScreen.Y - 18)
+        
+        -- HEALTHBAR (links oder rechts neben der Box)
+        local healthPercent = humanoid.Health / humanoid.MaxHealth
+        local barX = (SETTINGS.HealthBarPosition == "Right") and (boxX + boxWidth + 5) or (boxX - SETTINGS.HealthBarWidth - 5)
+        local barY = boxY + boxHeight - (boxHeight * healthPercent)
+        
+        drawings.HealthBg.Visible = true
+        drawings.HealthBg.From = Vector2.new(barX, boxY)
+        drawings.HealthBg.To = Vector2.new(barX + SETTINGS.HealthBarWidth, boxY + boxHeight)
+        
+        drawings.HealthBar.Visible = true
+        drawings.HealthBar.From = Vector2.new(barX, barY)
+        drawings.HealthBar.To = Vector2.new(barX + SETTINGS.HealthBarWidth, boxY + boxHeight)
+        drawings.HealthBar.Color = getHealthColor(humanoid.Health, humanoid.MaxHealth)
+        
+        -- TRACELINE (vom eigenen Charakter)
+        local localChar = LocalPlayer.Character
+        local localRoot = localChar and localChar:FindFirstChild("HumanoidRootPart")
+        if localRoot then
+            local localScreen, localVis = Camera:WorldToViewportPoint(localRoot.Position)
+            if localVis then
+                drawings.Traceline.Visible = true
+                drawings.Traceline.From = Vector2.new(localScreen.X, localScreen.Y)
+                drawings.Traceline.To = Vector2.new(bottomScreen.X, bottomScreen.Y)
+            else
+                drawings.Traceline.Visible = false
+            end
+        else
+            drawings.Traceline.Visible = false
+        end
+        
+        -- SKELETON (dynamische Linienverwaltung)
+        local bones = getSkeletonBones(character)
+        local connections = getSkeletonConnections(bones)
+        
+        while #drawings.Skeleton < #connections do
+            local line = Drawing.new("Line")
+            line.Color = SETTINGS.SkeletonColor
+            line.Thickness = SETTINGS.SkeletonThickness
+            line.Transparency = SETTINGS.Transparency
+            line.Visible = false
+            table.insert(drawings.Skeleton, line)
+        end
+        
+        for i = #drawings.Skeleton, #connections + 1, -1 do
+            drawings.Skeleton[i]:Remove()
+            table.remove(drawings.Skeleton, i)
+        end
+        
+        for i, conn in ipairs(connections) do
+            local pos1, pos2 = conn[1], conn[2]
+            local screen1, vis1 = Camera:WorldToViewportPoint(pos1)
+            local screen2, vis2 = Camera:WorldToViewportPoint(pos2)
+            local line = drawings.Skeleton[i]
+            
+            if vis1 and vis2 then
+                line.Visible = true
+                line.From = Vector2.new(screen1.X, screen1.Y)
+                line.To = Vector2.new(screen2.X, screen2.Y)
             else
                 line.Visible = false
             end
         end
         
-        ::continue::
+        ::nextPlayer::
     end
 end
 
-Players.PlayerAdded:Connect(function(player)
-    if player ~= LocalPlayer then
-        createESP(player)
-    end
-end)
+--// EVENT HANDLER //--
+Players.PlayerAdded:Connect(addPlayer)
+Players.PlayerRemoving:Connect(removePlayer)
 
-Players.PlayerRemoving:Connect(function(player)
-    removeESP(player)
-end)
-
-for _, player in pairs(Players:GetPlayers()) do
-    if player ~= LocalPlayer then
-        createESP(player)
-    end
+for _, player in ipairs(Players:GetPlayers()) do
+    addPlayer(player)
 end
 
-RunService.RenderStepped:Connect(function()
-    updateESP()
-end)
+RunService.RenderStepped:Connect(updateESP)
+
+print("✅ LION ESP ULTIMATE geladen - R6/R15 kompatibel")
