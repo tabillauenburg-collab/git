@@ -6,10 +6,12 @@ local hrp = character:WaitForChild("HumanoidRootPart")
 
 local stage = workspace.Structure.Stage15
 
+-- Erst zur Treadmill
 hrp.CFrame = stage.Treadmill.CFrame + Vector3.new(0, 3, 0)
 
-repeat
-    task.wait()
-until stage:FindFirstChild("WinBlock14")
+-- Warten, bis der Block geladen/erstellt wurde
+local win = stage:WaitForChild("WinBlock14", 10)
 
-hrp.CFrame = stage.WinBlock14.CFrame + Vector3.new(0, 3, 0)
+if win then
+    hrp.CFrame = win.CFrame + Vector3.new(0, 3, 0)
+end
