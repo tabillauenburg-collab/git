@@ -17,23 +17,24 @@
             background-color: transparent;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             overflow: hidden;
-            width: 540px;
-            height: 580px;
+            width: 800px;
+            height: 560px;
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
+            padding-left: 10px;
         }
 
-        /* App-Wrapper mit getrennter, freischwebender Leiste */
+        /* App-Wrapper: 3 Elemente nebeneinander (Leiste - Menü - Player-Card) */
         .app-wrapper {
             display: flex;
-            align-items: center;
-            gap: 12px; /* Deutlicher Abstand: Leiste ist AUßERHALB des Menüs! */
+            align-items: flex-start;
+            gap: 12px;
             position: relative;
         }
 
         /* ===================================================
-           FREISCHWEBENDE SEITENLEISTE (LINKS AUßERHALB)
+           1. FREISCHWEBENDE SEITENLEISTE (LINKS AUßERHALB)
            =================================================== */
         .floating-sidebar {
             width: 6px;
@@ -42,7 +43,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
-            margin-top: 56px; /* Bündig ausgerichtet zur Feature-Liste */
+            margin-top: 175px; /* Genau ausgerichtet zur Feature-Liste */
             position: relative;
         }
 
@@ -73,7 +74,7 @@
         }
 
         /* ===================================================
-           HAUPT-MENÜ KASTEN (KOMPAKT, OBSIDIAN, KEIN SCHIMMER)
+           2. HAUPTMENÜ KASTEN (1:1 VANITY OBSIDIAN DESIGN)
            =================================================== */
         #menu-container {
             width: 480px;
@@ -88,10 +89,10 @@
             position: relative;
         }
 
-        /* 1. Header Banner */
+        /* Banner */
         .banner {
-            height: 120px;
-            min-height: 120px;
+            height: 115px;
+            min-height: 115px;
             position: relative;
             background: radial-gradient(ellipse at 50% 30%, #242831 0%, #13151a 65%, #090a0d 100%);
             border-bottom: 1px solid #1c1e24;
@@ -123,8 +124,8 @@
         }
 
         .banner-emblem {
-            width: 54px;
-            height: 54px;
+            width: 52px;
+            height: 52px;
             filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.95));
         }
 
@@ -139,7 +140,22 @@
             filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.95));
         }
 
-        /* 2. Obere Tab-Leiste (Main | Bypasses | Settings mit Q / E) */
+        /* Sub-Header Leiste ("Main" oder Untermenütitel) */
+        .sub-header {
+            height: 28px;
+            min-height: 28px;
+            background: #000000;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-align: center;
+            line-height: 28px;
+            border-bottom: 1px solid #14161c;
+            flex-shrink: 0;
+        }
+
+        /* Tab-Leiste (Main/Bypasses/Settings oder List/Safe/Risk/Vehicle) */
         .tabs-bar {
             height: 34px;
             min-height: 34px;
@@ -148,7 +164,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 12px;
+            padding: 0 10px;
             flex-shrink: 0;
         }
 
@@ -165,12 +181,14 @@
         .tabs-container {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
+            flex: 1;
+            justify-content: center;
         }
 
         .tab-item {
-            padding: 4px 14px;
-            font-size: 12.5px;
+            padding: 5px 14px;
+            font-size: 13px;
             font-weight: 500;
             color: #8b92a0;
             border-radius: 5px;
@@ -184,23 +202,7 @@
             box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
         }
 
-        /* Sub-Header für Untermenüs */
-        .sub-header {
-            height: 32px;
-            min-height: 32px;
-            background: #08090b;
-            color: #ffffff;
-            font-size: 14.5px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            text-align: center;
-            line-height: 32px;
-            border-bottom: 1px solid #16181e;
-            display: none;
-            flex-shrink: 0;
-        }
-
-        /* 3. Inhaltsbereich (REINE Optionsliste - Keine innere Scrollbar mehr!) */
+        /* Content-Bereich (Optionsliste) */
         .content-wrapper {
             flex: 1;
             min-height: 0;
@@ -223,7 +225,7 @@
             display: none;
         }
 
-        /* Zeile (Kompakt 44px hoch - Features nicht mehr zu lang!) */
+        /* Zeile (Kompakt 44px - Genau 7-8 Zeilen sichtbar) */
         .menu-row {
             height: 44px;
             min-height: 44px;
@@ -346,6 +348,13 @@
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
         }
 
+        /* Choice / Value Label */
+        .choice-val {
+            font-size: 13px;
+            color: #9ca3af;
+            font-weight: 500;
+        }
+
         /* Divider */
         .menu-divider {
             display: flex;
@@ -371,31 +380,131 @@
             text-transform: uppercase;
         }
 
-        /* 4. Footer */
+        /* Footer (Fester Balken mit discord.gg/phantommenu) */
         .footer {
-            height: 28px;
-            min-height: 28px;
-            background: #060709;
+            height: 30px;
+            min-height: 30px;
+            background: #000000;
             border-top: 1px solid #14161c;
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 0 16px;
-            color: #525866;
-            font-size: 11.5px;
+            color: #64748b;
+            font-size: 12px;
             font-weight: 500;
             flex-shrink: 0;
+        }
+
+        .footer-left {
+            color: #ffffff;
+            font-weight: 500;
         }
 
         .footer-right {
             color: #8b92a0;
             font-weight: 600;
         }
+
+        /* ===================================================
+           3. PLAYER INFO CARD WIDGET (1:1 SCREENSHOT 2)
+           =================================================== */
+        #player-card {
+            width: 250px;
+            background: #0d0e12;
+            border-radius: 12px;
+            border: 1px solid #1a1c22;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.95);
+            overflow: hidden;
+            display: none; /* Sichtbar wenn playerCard.visible */
+            flex-direction: column;
+            margin-top: 60px;
+            flex-shrink: 0;
+        }
+
+        .pcard-header {
+            height: 32px;
+            background: #000000;
+            border-bottom: 1px solid #14161c;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 14px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .pcard-id {
+            color: #8b92a0;
+            font-weight: 600;
+        }
+
+        .pcard-body {
+            padding: 8px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            font-size: 12px;
+        }
+
+        .pcard-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #8b92a0;
+            height: 20px;
+        }
+
+        .pcard-label-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #8b92a0;
+        }
+
+        .pcard-icon {
+            font-size: 12px;
+            width: 14px;
+            text-align: center;
+            color: #64748b;
+        }
+
+        .pcard-val {
+            color: #e2e8f0;
+            font-weight: 500;
+            text-align: right;
+        }
+
+        /* Health & Armor Bars */
+        .pcard-bar-wrapper {
+            flex: 1;
+            height: 5px;
+            background: #191b21;
+            border-radius: 3px;
+            margin: 0 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pcard-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.2s ease;
+        }
+
+        .pcard-bar-fill.hp {
+            background: #22c55e; /* Vibrant Green */
+        }
+
+        .pcard-bar-fill.ap {
+            background: #3b82f6; /* Vibrant Blue */
+        }
     </style>
 </head>
 <body>
     <div class="app-wrapper">
-        <!-- Ausgelagerte, freischwebende Seitenleiste LINKS AUßERHALB (1:1 Vanity) -->
+        <!-- 1. Freischwebende Leiste LINKS AUßERHALB -->
         <div class="floating-sidebar" id="floating-sidebar">
             <span class="scroll-arrow">&#9650;</span>
             <div class="scroll-track">
@@ -404,9 +513,9 @@
             <span class="scroll-arrow">&#9660;</span>
         </div>
 
-        <!-- Der Menü-Kasten -->
+        <!-- 2. Hauptmenü-Fenster -->
         <div id="menu-container">
-            <!-- 1. Banner -->
+            <!-- Banner mit Chrom-Viper und PHANTOM -->
             <div class="banner">
                 <div class="banner-grid"></div>
                 <div class="banner-content">
@@ -433,38 +542,99 @@
                 </div>
             </div>
 
-            <!-- 2. Obere Tab-Leiste (Main | Bypasses | Settings mit Q/E) -->
+            <!-- Schwarzer Sub-Header ("Main", "Online Options", etc.) -->
+            <div class="sub-header" id="sub-header">Main</div>
+
+            <!-- Tab-Leiste (Main/Bypasses/Settings oder List/Safe/Risk/Vehicle mit Q & E) -->
             <div class="tabs-bar" id="tabs-bar">
                 <div class="tab-hint">Q</div>
                 <div class="tabs-container" id="tabs-container"></div>
                 <div class="tab-hint">E</div>
             </div>
 
-            <!-- 2b. Sub-Header für Untermenüs -->
-            <div class="sub-header" id="sub-header">PHANTOM</div>
-
-            <!-- 3. Inhaltsbereich (Keine innere Bar mehr!) -->
+            <!-- Feature-Liste -->
             <div class="content-wrapper">
                 <div class="item-list" id="item-list"></div>
             </div>
 
-            <!-- 4. Footer -->
+            <!-- Fester Footer (Build 49488 | sc.dg/phantom) -->
             <div class="footer">
-                <span class="footer-left" id="footer-left">Build 49488 | discord.gg/phantommenu</span>
-                <span class="footer-right" id="footer-right">1 / 1</span>
+                <span class="footer-left" id="footer-left">Build 49488 | sc.dg/phantom</span>
+                <span class="footer-right" id="footer-right">1 / 8</span>
+            </div>
+        </div>
+
+        <!-- 3. Player Info Card Widget (Rechts neben dem Menü - 1:1 Screenshot 2) -->
+        <div id="player-card">
+            <div class="pcard-header">
+                <span id="pcard-name">Player</span>
+                <span class="pcard-id" id="pcard-srvid">0</span>
+            </div>
+            <div class="pcard-body">
+                <div class="pcard-row">
+                    <div class="pcard-label-box"><span class="pcard-icon">👤</span><span>Character</span></div>
+                    <span class="pcard-val" id="pcard-char">-</span>
+                </div>
+                <div class="pcard-row">
+                    <div class="pcard-label-box"><span class="pcard-icon">📞</span><span>Phone</span></div>
+                    <span class="pcard-val" id="pcard-phone">-</span>
+                </div>
+                <div class="pcard-row">
+                    <div class="pcard-label-box"><span class="pcard-icon">📻</span><span>Radio</span></div>
+                    <span class="pcard-val" id="pcard-radio">-</span>
+                </div>
+                <div class="pcard-row">
+                    <div class="pcard-label-box"><span class="pcard-icon">💼</span><span>Job</span></div>
+                    <span class="pcard-val" id="pcard-job">user</span>
+                </div>
+                <div class="pcard-row">
+                    <div class="pcard-label-box"><span class="pcard-icon">👥</span><span>Group</span></div>
+                    <span class="pcard-val" id="pcard-group">user</span>
+                </div>
+                <div class="pcard-row">
+                    <div class="pcard-label-box"><span class="pcard-icon">💚</span><span>Health</span></div>
+                    <div class="pcard-bar-wrapper">
+                        <div class="pcard-bar-fill hp" id="pcard-hp-bar" style="width: 100%;"></div>
+                    </div>
+                    <span class="pcard-val" id="pcard-hp-val">100</span>
+                </div>
+                <div class="pcard-row">
+                    <div class="pcard-label-box"><span class="pcard-icon">🛡️</span><span>Armor</span></div>
+                    <div class="pcard-bar-wrapper">
+                        <div class="pcard-bar-fill ap" id="pcard-ap-bar" style="width: 0%;"></div>
+                    </div>
+                    <span class="pcard-val" id="pcard-ap-val">0</span>
+                </div>
+                <div class="pcard-row">
+                    <div class="pcard-label-box"><span class="pcard-icon">🎯</span><span>Distance</span></div>
+                    <span class="pcard-val" id="pcard-dist">0.0m</span>
+                </div>
+                <div class="pcard-row">
+                    <div class="pcard-label-box"><span class="pcard-icon">🚗</span><span>Vehicle</span></div>
+                    <span class="pcard-val" id="pcard-veh">On Foot</span>
+                </div>
+                <div class="pcard-row">
+                    <div class="pcard-label-box"><span class="pcard-icon">🔫</span><span>Weapon</span></div>
+                    <span class="pcard-val" id="pcard-wep">Unarmed</span>
+                </div>
+                <div class="pcard-row">
+                    <div class="pcard-label-box"><span class="pcard-icon">⚡</span><span>Speed</span></div>
+                    <span class="pcard-val" id="pcard-spd">0.0 km/h</span>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
         let state = {
-            title: "PHANTOM",
+            title: "Main",
             footerLeft: "Build 49488 | discord.gg/phantommenu",
             selectedIndex: 0,
             isRoot: true,
             tabs: ["Main", "Bypasses", "Settings"],
             currentTab: 0,
-            items: []
+            items: [],
+            playerCard: { visible: false }
         };
 
         const itemListEl = document.getElementById("item-list");
@@ -474,14 +644,17 @@
         const footerLeftEl = document.getElementById("footer-left");
         const footerRightEl = document.getElementById("footer-right");
         const scrollThumbEl = document.getElementById("scroll-thumb");
+        const playerCardEl = document.getElementById("player-card");
 
         function render() {
             if (!state || !state.items) return;
 
-            // Tabs Bar vs Sub-Header umschalten
+            // Sub-Header Text
+            subHeaderEl.textContent = state.title || "Main";
+
+            // Tab-Leiste (Main/Bypasses/Settings oder List/Safe/Risk/Vehicle)
             if (state.tabs && state.tabs.length > 0) {
                 tabsBarEl.style.display = "flex";
-                subHeaderEl.style.display = "none";
                 tabsContainerEl.innerHTML = "";
                 state.tabs.forEach((tabName, idx) => {
                     const tabEl = document.createElement("div");
@@ -491,11 +664,10 @@
                 });
             } else {
                 tabsBarEl.style.display = "none";
-                subHeaderEl.style.display = "block";
-                subHeaderEl.textContent = state.title || "PHANTOM";
             }
 
-            footerLeftEl.textContent = state.footerLeft || "Build 49488 | discord.gg/phantommenu";
+            // Footer
+            footerLeftEl.textContent = state.footerLeft || "Build 49488 | sc.dg/phantom";
 
             const selectableItems = state.items.filter(it => it.type !== "divider");
             const totalSelectable = selectableItems.length;
@@ -504,10 +676,10 @@
 
             footerRightEl.textContent = `${(currentSelectableIndex >= 0 ? currentSelectableIndex + 1 : 1)} / ${Math.max(1, totalSelectable)}`;
 
-            // Freischwebende Scrollbar Thumb berechnen
+            // Freischwebende Scrollbar Thumb Position
             if (totalSelectable > 1) {
                 const percent = Math.max(0, currentSelectableIndex) / Math.max(1, totalSelectable - 1);
-                const thumbHeight = Math.max(14, 100 / totalSelectable);
+                const thumbHeight = Math.max(16, 100 / totalSelectable);
                 scrollThumbEl.style.height = `${thumbHeight}%`;
                 scrollThumbEl.style.top = `${percent * (100 - thumbHeight)}%`;
             } else {
@@ -515,6 +687,7 @@
                 scrollThumbEl.style.top = "0%";
             }
 
+            // Feature-Liste leeren & befüllen
             itemListEl.innerHTML = "";
 
             state.items.forEach((item, index) => {
@@ -557,6 +730,8 @@
                             </div>
                         </div>
                     `;
+                } else if (item.type === "choice") {
+                    rightHtml = `<span class="choice-val">${item.valueText || ""}</span>`;
                 }
 
                 row.innerHTML = `
@@ -575,6 +750,34 @@
             const activeRow = itemListEl.querySelector(".menu-row.selected");
             if (activeRow) {
                 activeRow.scrollIntoView({ block: "nearest", behavior: "auto" });
+            }
+
+            // Player Info Card aktualisieren (1:1 Screenshot 2)
+            if (state.playerCard && state.playerCard.visible) {
+                playerCardEl.style.display = "flex";
+                const pc = state.playerCard;
+                document.getElementById("pcard-name").textContent = pc.name || "Player";
+                document.getElementById("pcard-srvid").textContent = pc.srvId !== undefined ? pc.srvId : "0";
+                document.getElementById("pcard-char").textContent = pc.char || pc.name || "-";
+                document.getElementById("pcard-phone").textContent = pc.phone || "-";
+                document.getElementById("pcard-radio").textContent = pc.radio || "-";
+                document.getElementById("pcard-job").textContent = pc.job || "user";
+                document.getElementById("pcard-group").textContent = pc.group || "user";
+
+                const hp = pc.hp !== undefined ? pc.hp : 100;
+                document.getElementById("pcard-hp-val").textContent = hp;
+                document.getElementById("pcard-hp-bar").style.width = `${Math.min(100, Math.max(0, hp))}%`;
+
+                const ap = pc.ap !== undefined ? pc.ap : 0;
+                document.getElementById("pcard-ap-val").textContent = ap;
+                document.getElementById("pcard-ap-bar").style.width = `${Math.min(100, Math.max(0, ap))}%`;
+
+                document.getElementById("pcard-dist").textContent = pc.dist !== undefined ? `${pc.dist}m` : "0.0m";
+                document.getElementById("pcard-veh").textContent = pc.veh || "On Foot";
+                document.getElementById("pcard-wep").textContent = pc.wep || "Unarmed";
+                document.getElementById("pcard-spd").textContent = pc.spd !== undefined ? `${pc.spd} km/h` : "0.0 km/h";
+            } else {
+                playerCardEl.style.display = "none";
             }
         }
 
@@ -603,7 +806,7 @@
             }
         });
 
-        // Initiales Rendern
+        // Erstes Rendern
         render();
     </script>
 </body>
