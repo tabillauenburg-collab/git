@@ -17,20 +17,20 @@
             background-color: transparent;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             overflow: hidden;
-            width: 800px;
-            height: 1150px;
+            width: 900px;
+            height: 1300px;
             display: flex;
             align-items: flex-start;
             justify-content: center;
-            padding: 16px 16px 0 16px;
+            padding: 18px;
         }
 
-        /* Haupt-Container mit 1:1 Vanity Look (Skaliert für gestochen scharfe Lesbarkeit) */
+        /* Haupt-Container mit 1:1 Vanity Look (Groß skaliert für perfekte Lesbarkeit) */
         #menu-container {
-            width: 768px;
+            width: 864px;
             background: linear-gradient(180deg, #121316 0%, #0a0b0d 100%);
-            border-radius: 20px;
-            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9), 0 0 0 2px rgba(255, 255, 255, 0.14);
+            border-radius: 22px;
+            box-shadow: 0 26px 70px rgba(0, 0, 0, 0.95), 0 0 0 2px rgba(255, 255, 255, 0.15);
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -39,10 +39,10 @@
 
         /* Metallischer Banner mit Carbon-Raster & 3D Viper/Phantom Logo */
         .banner {
-            height: 210px;
+            height: 230px;
             position: relative;
-            background: radial-gradient(circle at 50% 20%, #2e333d 0%, #17191e 65%, #0f1013 100%);
-            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            background: radial-gradient(circle at 50% 20%, #313742 0%, #17191e 65%, #0f1013 100%);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.12);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -56,10 +56,10 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-size: 24px 24px;
+            background-size: 26px 26px;
             background-image: 
-                linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+                linear-gradient(to right, rgba(255, 255, 255, 0.038) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.038) 1px, transparent 1px);
             pointer-events: none;
         }
 
@@ -70,45 +70,45 @@
             left: 0;
             width: 100%;
             height: 52%;
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0) 100%);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0) 100%);
             pointer-events: none;
         }
 
         .banner-content {
             display: flex;
             align-items: center;
-            gap: 24px;
+            gap: 26px;
             z-index: 2;
         }
 
         /* Chrome Viper Emblem SVG */
         .banner-emblem {
-            width: 86px;
-            height: 86px;
-            filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.95));
+            width: 96px;
+            height: 96px;
+            filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.95));
         }
 
         /* 3D Metallischer Chrom-Schriftzug "PHANTOM" */
         .banner-title {
-            font-size: 58px;
+            font-size: 66px;
             font-weight: 900;
-            letter-spacing: 7px;
+            letter-spacing: 8px;
             text-transform: uppercase;
             background: linear-gradient(180deg, #ffffff 0%, #d8dde6 30%, #8b92a0 70%, #525866 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.95));
+            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.95));
         }
 
         /* Sub-Header mit Breadcrumb-Titel (z. B. "Combat Options") */
         .sub-header {
             background: #08090b;
             color: #ffffff;
-            font-size: 21px;
+            font-size: 24px;
             font-weight: 600;
             letter-spacing: 0.8px;
             text-align: center;
-            padding: 13px 0;
+            padding: 14px 0;
             border-bottom: 2px solid rgba(255, 255, 255, 0.08);
             text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
         }
@@ -117,43 +117,43 @@
         .content-wrapper {
             display: flex;
             position: relative;
-            min-height: 360px;
+            min-height: 400px;
             background: #0d0e11;
         }
 
         /* Linke Scrollbar (exakt wie im Vanity Screenshot) */
         .scrollbar-left {
-            width: 34px;
-            background: rgba(0, 0, 0, 0.3);
-            border-right: 1px solid rgba(255, 255, 255, 0.06);
+            width: 38px;
+            background: rgba(0, 0, 0, 0.32);
+            border-right: 1px solid rgba(255, 255, 255, 0.07);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
-            padding: 10px 0;
+            padding: 12px 0;
             position: relative;
         }
 
         .scroll-arrow {
-            font-size: 13px;
-            color: rgba(255, 255, 255, 0.45);
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.5);
             line-height: 1;
         }
 
         .scroll-track {
             position: absolute;
-            top: 32px;
-            bottom: 32px;
-            width: 6px;
+            top: 36px;
+            bottom: 36px;
+            width: 7px;
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
+            border-radius: 4px;
         }
 
         .scroll-thumb {
             position: absolute;
-            width: 6px;
+            width: 7px;
             background: #9ca3af;
-            border-radius: 3px;
+            border-radius: 4px;
             transition: top 0.1s ease, height 0.1s ease;
         }
 
@@ -162,18 +162,24 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            max-height: 850px;
+        }
+        .item-list::-webkit-scrollbar {
+            display: none;
         }
 
         /* Einzelne Zeile */
         .menu-row {
-            height: 62px;
+            height: 70px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 28px;
+            padding: 0 32px;
             color: #d1d5db;
-            font-size: 21px;
+            font-size: 24px;
             font-weight: 500;
             position: relative;
             transition: background 0.12s ease, color 0.12s ease;
@@ -181,29 +187,29 @@
 
         /* Aktive / Selektierte Zeile (Vanity Highlight Gradient) */
         .menu-row.selected {
-            background: linear-gradient(90deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.22) 50%, rgba(255, 255, 255, 0.07) 100%);
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.24) 50%, rgba(255, 255, 255, 0.08) 100%);
             color: #ffffff;
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 -1px 0 rgba(255, 255, 255, 0.3);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), inset 0 -1px 0 rgba(255, 255, 255, 0.35);
         }
 
         .row-left {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 16px;
             z-index: 1;
         }
 
         .row-right {
             display: flex;
             align-items: center;
-            gap: 18px;
+            gap: 20px;
             z-index: 1;
         }
 
         /* Submenu Chevron Arrow */
         .chevron {
-            font-size: 22px;
-            color: rgba(255, 255, 255, 0.5);
+            font-size: 26px;
+            color: rgba(255, 255, 255, 0.55);
             font-weight: 700;
         }
 
@@ -213,49 +219,49 @@
 
         /* Pill Switch (Toggle) */
         .pill-switch {
-            width: 58px;
-            height: 32px;
+            width: 66px;
+            height: 36px;
             background: #252830;
-            border-radius: 16px;
+            border-radius: 18px;
             position: relative;
-            transition: background 0.2s ease, box-shadow 0.2s ease;
+            transition: background 0.22s ease, box-shadow 0.22s ease;
             box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.7);
         }
 
-        /* Aktiver Toggle (Hellere Kapsel & sichtbarer Schalter-Zustand) */
+        /* Aktiver Toggle (Hellere Kapsel & leuchtender Schalterknopf) */
         .pill-switch.active {
-            background: #505666;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4), 0 0 10px rgba(255, 255, 255, 0.22);
+            background: #4f5869 !important;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4), 0 0 14px rgba(255, 255, 255, 0.3) !important;
         }
 
         .pill-knob {
-            width: 26px;
-            height: 26px;
+            width: 30px;
+            height: 30px;
             background: #ffffff;
             border-radius: 50%;
             position: absolute;
             top: 3px;
             left: 3px;
             transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.7);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
         }
 
         .pill-switch.active .pill-knob {
-            transform: translateX(26px);
-            box-shadow: 0 2px 7px rgba(0, 0, 0, 0.9);
+            transform: translateX(30px) !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.9) !important;
         }
 
         /* Slider */
         .slider-wrapper {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 16px;
         }
 
         .slider-value {
-            font-size: 19px;
+            font-size: 22px;
             color: #9ca3af;
-            min-width: 60px;
+            min-width: 68px;
             text-align: right;
             font-variant-numeric: tabular-nums;
         }
@@ -265,70 +271,70 @@
         }
 
         .slider-track {
-            width: 124px;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.18);
-            border-radius: 3px;
+            width: 140px;
+            height: 7px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
             position: relative;
         }
 
         .slider-fill {
             height: 100%;
             background: #9ca3af;
-            border-radius: 3px;
+            border-radius: 4px;
         }
 
         .slider-thumb {
-            width: 14px;
-            height: 14px;
+            width: 16px;
+            height: 16px;
             background: #ffffff;
             border-radius: 50%;
             position: absolute;
-            top: -4px;
+            top: -4.5px;
             transform: translateX(-50%);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.8);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.85);
         }
 
         /* Divider / Trennzeile mit Text (z. B. "─── Other ───") */
         .menu-divider {
-            height: 44px;
+            height: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
-            padding: 0 24px;
+            padding: 0 28px;
         }
 
         .divider-line {
             position: absolute;
-            left: 24px;
-            right: 24px;
+            left: 28px;
+            right: 28px;
             height: 1px;
-            background: rgba(255, 255, 255, 0.14);
+            background: rgba(255, 255, 255, 0.15);
         }
 
         .divider-text {
             position: relative;
             background: #0d0e11;
-            padding: 0 16px;
-            font-size: 16px;
+            padding: 0 18px;
+            font-size: 19px;
             font-weight: 600;
-            color: rgba(255, 255, 255, 0.55);
+            color: rgba(255, 255, 255, 0.6);
             letter-spacing: 0.6px;
             text-transform: capitalize;
         }
 
         /* Footer */
         .footer {
-            height: 46px;
+            height: 52px;
             background: #08090b;
             border-top: 2px solid rgba(255, 255, 255, 0.08);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 24px;
-            font-size: 17px;
-            color: rgba(255, 255, 255, 0.55);
+            padding: 0 28px;
+            font-size: 19px;
+            color: rgba(255, 255, 255, 0.6);
             font-weight: 500;
         }
 
@@ -376,7 +382,7 @@
         </div>
 
         <!-- Sub-Header / Breadcrumbs -->
-        <div class="sub-header" id="sub-header">Combat Options</div>
+        <div class="sub-header" id="sub-header">PHANTOM</div>
 
         <!-- Inhaltsbereich mit Scrollbar -->
         <div class="content-wrapper">
@@ -396,26 +402,17 @@
         <!-- Footer -->
         <div class="footer">
             <span class="footer-left" id="footer-left">Build 49488 | discord.gg/phantommenu</span>
-            <span class="footer-right" id="footer-right">1 / 8</span>
+            <span class="footer-right" id="footer-right">1 / 1</span>
         </div>
     </div>
 
     <script>
-        // Menü-Zustand
+        // Initialer Zustand (wird sofort von Lua überschrieben, keine Dummy-Daten mehr!)
         let state = {
-            title: "Combat Options",
+            title: "PHANTOM",
             footerLeft: "Build 49488 | discord.gg/phantommenu",
             selectedIndex: 0,
-            items: [
-                { type: "submenu", label: "Aimbot" },
-                { type: "submenu", label: "Silent Aim" },
-                { type: "submenu", label: "Rage Bot" },
-                { type: "submenu", label: "Trigger Bot" },
-                { type: "divider", label: "Other" },
-                { type: "toggle", label: "One Punch", value: false },
-                { type: "toggle", label: "Fast Punch", value: false },
-                { type: "toggle", label: "Punch Mode", value: false }
-            ]
+            items: []
         };
 
         const itemListEl = document.getElementById("item-list");
@@ -503,11 +500,27 @@
 
                 itemListEl.appendChild(row);
             });
+
+            // Ausgewählte Zeile immer ins Blickfeld scrollen
+            const activeRow = itemListEl.querySelector(".menu-row.selected");
+            if (activeRow) {
+                activeRow.scrollIntoView({ block: "nearest", behavior: "auto" });
+            }
         }
 
         // Nachricht von Lua via SendDuiMessage
         window.addEventListener("message", function(event) {
-            const data = event.data;
+            let data = event.data;
+            if (!data) return;
+
+            // In FiveM CEF / DUI kommt der Payload oft als serialisierter JSON-String
+            if (typeof data === "string") {
+                try {
+                    data = JSON.parse(data);
+                } catch(e) {
+                    return;
+                }
+            }
             if (!data) return;
 
             if (data.action === "sync") {
