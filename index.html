@@ -500,6 +500,115 @@
         .pcard-bar-fill.ap {
             background: #3b82f6; /* Vibrant Blue */
         }
+
+        /* ===================================================
+           4. ZENTRIERTES SUCH-MODAL (ONLINE SPIELER-SUCHE)
+           =================================================== */
+        .search-modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(5, 6, 8, 0.78);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .search-modal-box {
+            width: 380px;
+            background: #0d0e12;
+            border: 1px solid #232733;
+            border-radius: 12px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95), 0 0 20px rgba(145, 65, 235, 0.15);
+            padding: 20px 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .search-modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .search-modal-title {
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            color: #ffffff;
+            text-transform: uppercase;
+        }
+
+        .search-modal-tag {
+            font-size: 10px;
+            font-weight: 700;
+            color: #a855f7;
+            background: rgba(168, 85, 247, 0.15);
+            padding: 2px 8px;
+            border-radius: 4px;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            text-transform: uppercase;
+        }
+
+        .search-modal-subtitle {
+            font-size: 11.5px;
+            color: #94a3b8;
+            margin-top: -4px;
+        }
+
+        .search-input-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #14161f;
+            border: 1px solid #282c3c;
+            border-radius: 8px;
+            padding: 8px 12px;
+        }
+
+        .search-icon {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .search-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-size: 13px;
+            color: #f8fafc;
+            font-family: inherit;
+        }
+
+        .search-input::placeholder {
+            color: #475569;
+        }
+
+        .search-status {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .search-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 6px;
+            border-top: 1px solid #1a1d26;
+            font-size: 10.5px;
+            color: #64748b;
+        }
+
+        .search-hint {
+            display: inline-block;
+        }
     </style>
 </head>
 <body>
@@ -621,6 +730,25 @@
                     <div class="pcard-label-box"><span class="pcard-icon">⚡</span><span>Speed</span></div>
                     <span class="pcard-val" id="pcard-spd">0.0 km/h</span>
                 </div>
+            </div>
+    </div>
+
+    <!-- 4. Zentriertes Such-Modal (Online Spieler-Suche) -->
+    <div id="search-modal" class="search-modal-backdrop" style="display: none;">
+        <div class="search-modal-box">
+            <div class="search-modal-header">
+                <div class="search-modal-title">SPIELER SUCHEN</div>
+                <div class="search-modal-tag">ONLINE</div>
+            </div>
+            <div class="search-modal-subtitle">Name oder Server-ID eingeben...</div>
+            <div class="search-input-wrap">
+                <span class="search-icon">&#128269;</span>
+                <input type="text" id="search-input" class="search-input" placeholder="z. B. BoldMoth oder 12" />
+            </div>
+            <div class="search-status" id="search-status">Tippe den Spielernamen ein...</div>
+            <div class="search-actions">
+                <span class="search-hint">[ENTER] Suchen & Auswählen</span>
+                <span class="search-hint">[ESC] Abbrechen</span>
             </div>
         </div>
     </div>
@@ -803,6 +931,20 @@
             } else if (data.action === "setIndex") {
                 state.selectedIndex = data.index;
                 render();
+            } else if (data.action === "openSearch") {
+                const sm = document.getElementById("search-modal");
+                if (sm) {
+                    sm.style.display = "flex";
+                    const inp = document.getElementById("search-input");
+                    if (inp) {
+                        inp.value = data.query || "";
+                    }
+                    const st = document.getElementById("search-status");
+                    if (st) st.textContent = data.status || "Name oder ID eingeben...";
+                }
+            } else if (data.action === "closeSearch") {
+                const sm = document.getElementById("search-modal");
+                if (sm) sm.style.display = "none";
             }
         });
 
