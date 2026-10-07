@@ -17,36 +17,40 @@
             background-color: transparent;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             overflow: hidden;
-            width: 900px;
-            height: 1300px;
+            width: 560px;
+            height: 760px;
             display: flex;
             align-items: flex-start;
             justify-content: center;
-            padding: 18px;
+            padding: 10px;
         }
 
-        /* Haupt-Container mit 1:1 Vanity Look (Groß skaliert für perfekte Lesbarkeit) */
+        /* Haupt-Container (1:1 Vanity Look - kompakt, dunkel, kein seitlicher Schimmer) */
         #menu-container {
-            width: 864px;
-            background: linear-gradient(180deg, #121316 0%, #0a0b0d 100%);
-            border-radius: 22px;
-            box-shadow: 0 26px 70px rgba(0, 0, 0, 0.95), 0 0 0 2px rgba(255, 255, 255, 0.15);
+            width: 540px;
+            height: 740px;
+            background: #0d0e12;
+            border-radius: 16px;
+            border: 1px solid #1a1c22;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.95);
             overflow: hidden;
             display: flex;
             flex-direction: column;
             position: relative;
         }
 
-        /* Metallischer Banner mit Carbon-Raster & 3D Viper/Phantom Logo */
+        /* 1. Metallischer Banner mit Tech-Raster & Viper Logo */
         .banner {
-            height: 230px;
+            height: 140px;
+            min-height: 140px;
             position: relative;
-            background: radial-gradient(circle at 50% 20%, #313742 0%, #17191e 65%, #0f1013 100%);
-            border-bottom: 2px solid rgba(255, 255, 255, 0.12);
+            background: radial-gradient(ellipse at 50% 30%, #262a33 0%, #14161b 65%, #0a0b0e 100%);
+            border-bottom: 1px solid #1c1e24;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            flex-shrink: 0;
         }
 
         /* Feines Carbon-Raster im Banner */
@@ -56,160 +60,205 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-size: 26px 26px;
+            background-size: 18px 18px;
             background-image: 
-                linear-gradient(to right, rgba(255, 255, 255, 0.038) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 255, 255, 0.038) 1px, transparent 1px);
-            pointer-events: none;
-        }
-
-        /* Glanz-Lichtreflexion auf der oberen Banner-Hälfte */
-        .banner-gloss {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 52%;
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0) 100%);
+                linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
             pointer-events: none;
         }
 
         .banner-content {
             display: flex;
             align-items: center;
-            gap: 26px;
+            gap: 18px;
             z-index: 2;
         }
 
         /* Chrome Viper Emblem SVG */
         .banner-emblem {
-            width: 96px;
-            height: 96px;
-            filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.95));
+            width: 62px;
+            height: 62px;
+            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.95));
         }
 
         /* 3D Metallischer Chrom-Schriftzug "PHANTOM" */
         .banner-title {
-            font-size: 66px;
+            font-size: 44px;
             font-weight: 900;
-            letter-spacing: 8px;
+            letter-spacing: 6px;
             text-transform: uppercase;
             background: linear-gradient(180deg, #ffffff 0%, #d8dde6 30%, #8b92a0 70%, #525866 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.95));
+            filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.95));
         }
 
-        /* Sub-Header mit Breadcrumb-Titel (z. B. "Combat Options") */
+        /* 2. TAB-LEISTE (Main | Bypasses | Settings mit Q & E Hinweisen) */
+        .tabs-bar {
+            height: 36px;
+            min-height: 36px;
+            background: #08090b;
+            border-bottom: 1px solid #16181e;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 12px;
+            flex-shrink: 0;
+        }
+
+        .tab-hint {
+            font-size: 11px;
+            font-weight: 700;
+            color: #64748b;
+            background: #14161c;
+            border: 1px solid #1f232c;
+            padding: 2px 7px;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+        }
+
+        .tabs-container {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tab-item {
+            padding: 5px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #8b92a0;
+            border-radius: 6px;
+            transition: all 0.15s ease;
+        }
+
+        .tab-item.active {
+            background: #252831;
+            color: #ffffff;
+            font-weight: 600;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+        }
+
+        /* Sub-Header für Untermenüs (z. B. "Noclip") */
         .sub-header {
+            height: 34px;
+            min-height: 34px;
             background: #08090b;
             color: #ffffff;
-            font-size: 24px;
+            font-size: 15px;
             font-weight: 600;
-            letter-spacing: 0.8px;
+            letter-spacing: 0.5px;
             text-align: center;
-            padding: 14px 0;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.08);
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+            line-height: 34px;
+            border-bottom: 1px solid #16181e;
+            display: none;
+            flex-shrink: 0;
         }
 
-        /* Haupt-Inhaltsbereich mit linker Scrollbar */
+        /* 3. Inhaltsbereich mit Scrollbar */
         .content-wrapper {
+            flex: 1;
+            min-height: 0;
             display: flex;
             position: relative;
-            min-height: 400px;
-            background: #0d0e11;
+            background: #0a0b0e;
+            overflow: hidden;
         }
 
-        /* Linke Scrollbar (exakt wie im Vanity Screenshot) */
+        /* Linke dezente Scrollbar (1:1 Vanity) */
         .scrollbar-left {
-            width: 38px;
-            background: rgba(0, 0, 0, 0.32);
-            border-right: 1px solid rgba(255, 255, 255, 0.07);
+            width: 28px;
+            min-width: 28px;
+            background: #07080a;
+            border-right: 1px solid #14161c;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
-            padding: 12px 0;
+            padding: 8px 0;
             position: relative;
+            flex-shrink: 0;
         }
 
         .scroll-arrow {
-            font-size: 15px;
-            color: rgba(255, 255, 255, 0.5);
+            font-size: 11px;
+            color: #555c68;
             line-height: 1;
         }
 
         .scroll-track {
-            position: absolute;
-            top: 36px;
-            bottom: 36px;
-            width: 7px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
+            flex: 1;
+            width: 3px;
+            background: #12141a;
+            border-radius: 2px;
+            margin: 6px 0;
+            position: relative;
         }
 
         .scroll-thumb {
             position: absolute;
-            width: 7px;
-            background: #9ca3af;
-            border-radius: 4px;
-            transition: top 0.1s ease, height 0.1s ease;
+            width: 3px;
+            background: #737b8a;
+            border-radius: 2px;
+            transition: top 0.08s ease, height 0.08s ease;
         }
 
         /* Item-Liste */
         .item-list {
             flex: 1;
+            min-height: 0;
             display: flex;
             flex-direction: column;
             overflow-y: auto;
             scrollbar-width: none;
             -ms-overflow-style: none;
-            max-height: 850px;
         }
+
         .item-list::-webkit-scrollbar {
             display: none;
         }
 
         /* Einzelne Zeile */
         .menu-row {
-            height: 70px;
+            height: 48px;
+            min-height: 48px;
+            max-height: 48px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 32px;
-            color: #d1d5db;
-            font-size: 24px;
+            padding: 0 20px;
+            color: #cbd2dc;
+            font-size: 15.5px;
             font-weight: 500;
             position: relative;
-            transition: background 0.12s ease, color 0.12s ease;
+            transition: background 0.1s ease, color 0.1s ease;
         }
 
-        /* Aktive / Selektierte Zeile (Vanity Highlight Gradient) */
+        /* Aktive Zeile */
         .menu-row.selected {
-            background: linear-gradient(90deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.24) 50%, rgba(255, 255, 255, 0.08) 100%);
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.14) 50%, rgba(255, 255, 255, 0.04) 100%);
             color: #ffffff;
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), inset 0 -1px 0 rgba(255, 255, 255, 0.35);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), inset 0 -1px 0 rgba(255, 255, 255, 0.12);
         }
 
         .row-left {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 12px;
             z-index: 1;
         }
 
         .row-right {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 14px;
             z-index: 1;
         }
 
-        /* Submenu Chevron Arrow */
+        /* Submenu Chevron */
         .chevron {
-            font-size: 26px;
-            color: rgba(255, 255, 255, 0.55);
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.45);
             font-weight: 700;
         }
 
@@ -219,51 +268,49 @@
 
         /* Pill Switch (Toggle) */
         .pill-switch {
-            width: 66px;
-            height: 36px;
-            background: #252830;
-            border-radius: 18px;
+            width: 48px;
+            height: 26px;
+            background: #1c1e24;
+            border-radius: 13px;
             position: relative;
-            transition: background 0.22s ease, box-shadow 0.22s ease;
+            transition: background 0.2s ease, box-shadow 0.2s ease;
             box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.7);
         }
 
-        /* Aktiver Toggle (Hellere Kapsel & leuchtender Schalterknopf) */
         .pill-switch.active {
-            background: #4f5869 !important;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4), 0 0 14px rgba(255, 255, 255, 0.3) !important;
+            background: #464f5f !important;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4), 0 0 10px rgba(255, 255, 255, 0.25) !important;
         }
 
         .pill-knob {
-            width: 30px;
-            height: 30px;
+            width: 20px;
+            height: 20px;
             background: #ffffff;
             border-radius: 50%;
             position: absolute;
             top: 3px;
             left: 3px;
-            transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
         }
 
         .pill-switch.active .pill-knob {
-            transform: translateX(30px) !important;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.9) !important;
+            transform: translateX(22px) !important;
         }
 
         /* Slider */
         .slider-wrapper {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 10px;
         }
 
         .slider-value {
-            font-size: 22px;
+            font-size: 13px;
+            font-weight: 600;
             color: #9ca3af;
-            min-width: 68px;
+            min-width: 36px;
             text-align: right;
-            font-variant-numeric: tabular-nums;
         }
 
         .menu-row.selected .slider-value {
@@ -271,90 +318,85 @@
         }
 
         .slider-track {
-            width: 140px;
-            height: 7px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 4px;
+            width: 80px;
+            height: 5px;
+            background: #191b21;
+            border-radius: 3px;
             position: relative;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.6);
         }
 
         .slider-fill {
             height: 100%;
-            background: #9ca3af;
-            border-radius: 4px;
+            background: linear-gradient(90deg, #64748b 0%, #cbd5e1 100%);
+            border-radius: 3px;
         }
 
         .slider-thumb {
-            width: 16px;
-            height: 16px;
+            width: 11px;
+            height: 11px;
             background: #ffffff;
             border-radius: 50%;
             position: absolute;
-            top: -4.5px;
-            transform: translateX(-50%);
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.85);
+            top: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
         }
 
-        /* Divider / Trennzeile mit Text (z. B. "─── Other ───") */
+        /* Divider / Trennzeile */
         .menu-divider {
-            height: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
-            position: relative;
-            padding: 0 28px;
+            height: 32px;
+            min-height: 32px;
+            padding: 0 20px;
+            gap: 12px;
         }
 
         .divider-line {
-            position: absolute;
-            left: 28px;
-            right: 28px;
+            flex: 1;
             height: 1px;
-            background: rgba(255, 255, 255, 0.15);
+            background: #181a21;
         }
 
         .divider-text {
-            position: relative;
-            background: #0d0e11;
-            padding: 0 18px;
-            font-size: 19px;
+            color: #717887;
+            font-size: 11.5px;
             font-weight: 600;
-            color: rgba(255, 255, 255, 0.6);
             letter-spacing: 0.6px;
-            text-transform: capitalize;
+            text-transform: uppercase;
         }
 
         /* Footer */
         .footer {
-            height: 52px;
-            background: #08090b;
-            border-top: 2px solid rgba(255, 255, 255, 0.08);
+            height: 30px;
+            min-height: 30px;
+            background: #060709;
+            border-top: 1px solid #14161c;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 28px;
-            font-size: 19px;
-            color: rgba(255, 255, 255, 0.6);
+            padding: 0 16px;
+            color: #555c69;
+            font-size: 12px;
             font-weight: 500;
-        }
-
-        .footer-left {
-            letter-spacing: 0.4px;
+            flex-shrink: 0;
         }
 
         .footer-right {
-            font-variant-numeric: tabular-nums;
+            color: #8b92a0;
+            font-weight: 600;
         }
     </style>
 </head>
 <body>
     <div id="menu-container">
-        <!-- Banner -->
+        <!-- 1. Banner -->
         <div class="banner">
             <div class="banner-grid"></div>
-            <div class="banner-gloss"></div>
             <div class="banner-content">
-                <!-- 3D Viper / Phantom Emblem -->
+                <!-- 3D Viper Emblem SVG -->
                 <svg class="banner-emblem" viewBox="0 0 100 100">
                     <defs>
                         <linearGradient id="chromeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -368,23 +410,27 @@
                             <stop offset="100%" stop-color="#14161a"/>
                         </linearGradient>
                     </defs>
-                    <!-- Äußeres V-Schild -->
                     <polygon points="50,92 12,24 28,14 50,60 72,14 88,24" fill="url(#chromeGrad)"/>
                     <polygon points="50,82 22,26 32,20 50,54 68,20 78,26" fill="url(#innerShade)"/>
-                    <!-- Viper Kopf Silhouette -->
                     <path d="M50,22 Q66,22 72,36 Q64,48 50,56 Q36,48 28,36 Q34,22 50,22 Z" fill="url(#chromeGrad)"/>
-                    <!-- Viper Augen -->
                     <polygon points="42,34 46,38 41,40" fill="#0d0e11"/>
                     <polygon points="58,34 54,38 59,40" fill="#0d0e11"/>
                 </svg>
-                <div class="banner-title" id="banner-title">PHANTOM</div>
+                <div class="banner-title">PHANTOM</div>
             </div>
         </div>
 
-        <!-- Sub-Header / Breadcrumbs -->
+        <!-- 2. Obere Tab-Leiste (Main | Bypasses | Settings mit Q/E) -->
+        <div class="tabs-bar" id="tabs-bar">
+            <div class="tab-hint">Q</div>
+            <div class="tabs-container" id="tabs-container"></div>
+            <div class="tab-hint">E</div>
+        </div>
+
+        <!-- 2b. Sub-Header (für Untermenüs) -->
         <div class="sub-header" id="sub-header">PHANTOM</div>
 
-        <!-- Inhaltsbereich mit Scrollbar -->
+        <!-- 3. Inhaltsbereich -->
         <div class="content-wrapper">
             <!-- Linke Scrollbar -->
             <div class="scrollbar-left">
@@ -399,7 +445,7 @@
             <div class="item-list" id="item-list"></div>
         </div>
 
-        <!-- Footer -->
+        <!-- 4. Footer -->
         <div class="footer">
             <span class="footer-left" id="footer-left">Build 49488 | discord.gg/phantommenu</span>
             <span class="footer-right" id="footer-right">1 / 1</span>
@@ -407,25 +453,44 @@
     </div>
 
     <script>
-        // Initialer Zustand (wird sofort von Lua überschrieben, keine Dummy-Daten mehr!)
         let state = {
             title: "PHANTOM",
             footerLeft: "Build 49488 | discord.gg/phantommenu",
             selectedIndex: 0,
+            isRoot: true,
+            tabs: ["Main", "Bypasses", "Settings"],
+            currentTab: 0,
             items: []
         };
 
         const itemListEl = document.getElementById("item-list");
+        const tabsBarEl = document.getElementById("tabs-bar");
+        const tabsContainerEl = document.getElementById("tabs-container");
         const subHeaderEl = document.getElementById("sub-header");
         const footerLeftEl = document.getElementById("footer-left");
         const footerRightEl = document.getElementById("footer-right");
         const scrollThumbEl = document.getElementById("scroll-thumb");
 
-        // Zeichnet das Menü neu
         function render() {
             if (!state || !state.items) return;
 
-            subHeaderEl.textContent = state.title || "PHANTOM";
+            // Tabs Bar vs Sub-Header umschalten
+            if (state.tabs && state.tabs.length > 0) {
+                tabsBarEl.style.display = "flex";
+                subHeaderEl.style.display = "none";
+                tabsContainerEl.innerHTML = "";
+                state.tabs.forEach((tabName, idx) => {
+                    const tabEl = document.createElement("div");
+                    tabEl.className = `tab-item ${idx === state.currentTab ? "active" : ""}`;
+                    tabEl.textContent = tabName;
+                    tabsContainerEl.appendChild(tabEl);
+                });
+            } else {
+                tabsBarEl.style.display = "none";
+                subHeaderEl.style.display = "block";
+                subHeaderEl.textContent = state.title || "PHANTOM";
+            }
+
             footerLeftEl.textContent = state.footerLeft || "Build 49488 | discord.gg/phantommenu";
 
             const selectableItems = state.items.filter(it => it.type !== "divider");
@@ -435,10 +500,10 @@
 
             footerRightEl.textContent = `${(currentSelectableIndex >= 0 ? currentSelectableIndex + 1 : 1)} / ${Math.max(1, totalSelectable)}`;
 
-            // Update Scrollbar Thumb
+            // Scrollbar Thumb berechnen
             if (totalSelectable > 1) {
                 const percent = Math.max(0, currentSelectableIndex) / Math.max(1, totalSelectable - 1);
-                const thumbHeight = Math.max(20, 100 / totalSelectable);
+                const thumbHeight = Math.max(15, 100 / totalSelectable);
                 scrollThumbEl.style.height = `${thumbHeight}%`;
                 scrollThumbEl.style.top = `${percent * (100 - thumbHeight)}%`;
             } else {
@@ -455,6 +520,7 @@
                     div.innerHTML = `
                         <div class="divider-line"></div>
                         <div class="divider-text">${item.label || "Other"}</div>
+                        <div class="divider-line"></div>
                     `;
                     itemListEl.appendChild(div);
                     return;
@@ -501,19 +567,18 @@
                 itemListEl.appendChild(row);
             });
 
-            // Ausgewählte Zeile immer ins Blickfeld scrollen
+            // Ausgewählte Zeile ins Blickfeld scrollen
             const activeRow = itemListEl.querySelector(".menu-row.selected");
             if (activeRow) {
                 activeRow.scrollIntoView({ block: "nearest", behavior: "auto" });
             }
         }
 
-        // Nachricht von Lua via SendDuiMessage
+        // Nachricht von FiveM Lua via SendDuiMessage
         window.addEventListener("message", function(event) {
             let data = event.data;
             if (!data) return;
 
-            // In FiveM CEF / DUI kommt der Payload oft als serialisierter JSON-String
             if (typeof data === "string") {
                 try {
                     data = JSON.parse(data);
@@ -534,7 +599,7 @@
             }
         });
 
-        // Erstes Rendering beim Laden
+        // Initiales Rendern
         render();
     </script>
 </body>
