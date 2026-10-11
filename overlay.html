@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PHANTOM - Persistent Overlay (FOV & AC Banner)</title>
+    <title>PHANTOM - Overlay System</title>
     <style>
         * {
             box-sizing: border-box;
@@ -26,34 +26,42 @@
         }
 
         /* ===================================================
-           1. AC DETECTION BADGE (LEICHT ABGERUNDETE VIERECKIGE BOX)
+           1. AC DETECTION BADGE (OBEN IN DER MITTE - 1:1 SCREENSHOT)
            =================================================== */
         .ac-badge {
             position: fixed;
             left: 50%;
-            top: 72%;
+            top: 22px;
             transform: translateX(-50%);
-            background: rgba(13, 15, 20, 0.94);
-            border: 1px solid rgba(255, 255, 255, 0.13);
-            border-radius: 4px; /* leicht abgerundet */
-            padding: 7px 18px;
-            display: flex;
+            background: rgba(14, 15, 20, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-top: 2.5px solid #a855f7; /* Violetter Akzentstrich wie im Screenshot */
+            border-radius: 4px;
+            padding: 6px 18px;
+            display: none;
             align-items: center;
             gap: 9px;
-            box-shadow: 0 4px 22px rgba(0, 0, 0, 0.85);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8), 0 0 16px rgba(168, 85, 247, 0.22);
             z-index: 10000;
             pointer-events: none;
             font-size: 13px;
             font-weight: 600;
             letter-spacing: 0.35px;
-            color: #e2e8f0;
-            transition: opacity 0.25s ease, transform 0.25s ease;
+            color: #f1f5f9;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            opacity: 0;
+        }
+
+        .ac-badge.show {
+            display: flex;
+            opacity: 1;
         }
 
         .ac-badge.detected {
             border-color: rgba(239, 68, 68, 0.65);
-            background: rgba(24, 12, 16, 0.96);
-            box-shadow: 0 4px 22px rgba(239, 68, 68, 0.32);
+            border-top: 2.5px solid #a855f7;
+            background: rgba(20, 12, 16, 0.96);
+            box-shadow: 0 4px 22px rgba(239, 68, 68, 0.35), 0 0 16px rgba(168, 85, 247, 0.25);
         }
 
         .ac-badge.detected #ac-badge-dot {
@@ -63,6 +71,7 @@
 
         .ac-badge.clean {
             border-color: rgba(34, 197, 94, 0.5);
+            border-top: 2.5px solid #a855f7;
             background: rgba(10, 20, 15, 0.96);
             box-shadow: 0 4px 22px rgba(34, 197, 94, 0.25);
         }
@@ -76,13 +85,268 @@
             width: 7px;
             height: 7px;
             border-radius: 50%;
-            background: #22c55e;
-            box-shadow: 0 0 6px #22c55e;
+            background: #a855f7;
+            box-shadow: 0 0 6px #a855f7;
             flex-shrink: 0;
         }
 
         /* ===================================================
-           2. NUI FOV CIRCLE OVERLAY (HAUCHDÜNNER PERFEKTER KREIS)
+           2. LOADING SCREEN (IN DER MITTE - AUTHENTICATING, DETECTING AC...)
+           =================================================== */
+        #loading-screen {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 320px;
+            background: rgba(13, 15, 22, 0.96);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-top: 2.5px solid #a855f7;
+            border-radius: 10px;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.9), 0 0 28px rgba(168, 85, 247, 0.28);
+            padding: 24px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            z-index: 99999;
+            pointer-events: none;
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .loading-title {
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            background: linear-gradient(135deg, #ffffff 40%, #c084fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+        }
+
+        .loading-spinner {
+            width: 38px;
+            height: 38px;
+            border: 3px solid rgba(255, 255, 255, 0.08);
+            border-top: 3px solid #a855f7;
+            border-right: 3px solid #c084fc;
+            border-radius: 50%;
+            animation: spin 0.85s cubic-bezier(0.5, 0.1, 0.5, 0.9) infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-status {
+            font-size: 13px;
+            font-weight: 600;
+            color: #e2e8f0;
+            letter-spacing: 0.3px;
+            text-align: center;
+            min-height: 18px;
+        }
+
+        .loading-bar-wrapper {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .loading-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #9333ea, #c084fc);
+            border-radius: 2px;
+            transition: width 0.4s ease;
+            box-shadow: 0 0 8px #a855f7;
+        }
+
+        /* ===================================================
+           3. SPECTATOR LIST WIDGET (RECHTS OBEN - NUR WENN LEUTE DA SIND)
+           =================================================== */
+        #spectator-widget {
+            position: fixed;
+            top: 70px;
+            right: 24px;
+            width: 210px;
+            background: rgba(13, 15, 22, 0.94);
+            border: 1px solid rgba(255, 255, 255, 0.11);
+            border-top: 2px solid #ef4444; /* Rot für Spectator-Alarm */
+            border-radius: 6px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8), 0 0 12px rgba(239, 68, 68, 0.25);
+            overflow: hidden;
+            display: none;
+            flex-direction: column;
+            z-index: 10000;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .widget-header {
+            height: 28px;
+            background: rgba(8, 10, 15, 0.98);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 10px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            color: #ffffff;
+            text-transform: uppercase;
+        }
+
+        .widget-dot-red {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #ef4444;
+            box-shadow: 0 0 6px #ef4444;
+            animation: pulse 1.2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.85); }
+        }
+
+        .widget-body {
+            padding: 6px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .spec-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 11.5px;
+            color: #e2e8f0;
+            font-weight: 600;
+        }
+
+        .spec-role-admin {
+            font-size: 9.5px;
+            font-weight: 700;
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.5);
+            padding: 1px 5px;
+            border-radius: 3px;
+        }
+
+        /* ===================================================
+           4. KEYBINDS INFO OVERLAY (LINKS OBEN)
+           =================================================== */
+        #keybinds-widget {
+            position: fixed;
+            top: 70px;
+            left: 24px;
+            width: 215px;
+            background: rgba(13, 15, 22, 0.94);
+            border: 1px solid rgba(255, 255, 255, 0.11);
+            border-top: 2px solid #a855f7;
+            border-radius: 6px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8);
+            overflow: hidden;
+            display: none;
+            flex-direction: column;
+            z-index: 10000;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .keybind-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 11px;
+            color: #cbd5e1;
+            font-weight: 500;
+        }
+
+        .keybind-badge {
+            background: rgba(168, 85, 247, 0.16);
+            color: #c084fc;
+            border: 1px solid rgba(168, 85, 247, 0.45);
+            border-radius: 3px;
+            padding: 1px 6px;
+            font-weight: 700;
+            font-size: 10.5px;
+        }
+
+        /* ===================================================
+           5. INTERACTIVE "ENTER A KEY" MODAL (GRAUER HINTERGRUND)
+           =================================================== */
+        #rebind-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(6, 8, 12, 0.68);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999999;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+
+        .rebind-box {
+            width: 320px;
+            background: #0f1118;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-top: 2.5px solid #a855f7;
+            border-radius: 10px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.95), 0 0 25px rgba(168, 85, 247, 0.28);
+            padding: 24px 20px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .rebind-title {
+            font-size: 15px;
+            font-weight: 800;
+            letter-spacing: 1.2px;
+            color: #ffffff;
+            text-transform: uppercase;
+        }
+
+        .rebind-action-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: #c084fc;
+            background: rgba(168, 85, 247, 0.12);
+            border: 1px solid rgba(168, 85, 247, 0.35);
+            padding: 5px 14px;
+            border-radius: 5px;
+        }
+
+        .rebind-subtext {
+            font-size: 11.5px;
+            color: #94a3b8;
+            line-height: 1.4;
+        }
+
+        .rebind-hint {
+            font-size: 10.5px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        /* ===================================================
+           6. FOV & SNAPLINE OVERLAYS
            =================================================== */
         #fov-overlay {
             position: fixed;
@@ -96,42 +360,203 @@
     </style>
 </head>
 <body>
-    <!-- AC Detection Badge (Mitte, etwas weiter unten) -->
-    <div id="ac-badge" class="ac-badge" style="display: flex;">
+    <!-- 1. AC Detection Badge (Oben in der Mitte - 1:1 Screenshot) -->
+    <div id="ac-badge" class="ac-badge">
         <div class="ac-badge-dot" id="ac-badge-dot"></div>
-        <span id="ac-badge-text">No AC detected</span>
+        <span id="ac-badge-text">Detected AntiCheat(s): WaveShield, ElectronAC</span>
     </div>
 
-    <!-- NUI FOV Circle Overlay (Haardünner SVG Kreis genau in der Bildschirmmitte) -->
+    <!-- 2. Loading Screen (In der Mitte mit Fortschrittsanzeige) -->
+    <div id="loading-screen">
+        <div class="loading-title">PHANTOM</div>
+        <div class="loading-spinner"></div>
+        <div class="loading-status" id="loading-status">Authenticating...</div>
+        <div class="loading-bar-wrapper">
+            <div class="loading-bar-fill" id="loading-bar-fill"></div>
+        </div>
+    </div>
+
+    <!-- 3. Spectator List Widget (Rechts oben - Nur sichtbar wenn Spectator anwesend) -->
+    <div id="spectator-widget">
+        <div class="widget-header">
+            <span>Spectators (<span id="spec-count">0</span>)</span>
+            <div class="widget-dot-red"></div>
+        </div>
+        <div class="widget-body" id="spec-list-body">
+            <!-- Dynamisch aus Lua befüllt -->
+        </div>
+    </div>
+
+    <!-- 4. Keybinds Info Overlay (Links oben) -->
+    <div id="keybinds-widget">
+        <div class="widget-header">
+            <span>Keybinds</span>
+        </div>
+        <div class="widget-body" id="keybinds-list-body">
+            <!-- Dynamisch befüllt -->
+        </div>
+    </div>
+
+    <!-- 5. Interactive "Enter a Key" Modal -->
+    <div id="rebind-overlay">
+        <div class="rebind-box">
+            <div class="rebind-title">Enter a Key</div>
+            <div class="rebind-action-name" id="rebind-action-text">Action: Toggle Noclip</div>
+            <div class="rebind-subtext">Drücke eine beliebige Taste oder Maustaste (inkl. Seitentasten M4/M5)</div>
+            <div class="rebind-hint">[ESC] zum Abbrechen</div>
+        </div>
+    </div>
+
+    <!-- 6. NUI FOV Circle Overlay -->
     <div id="fov-overlay" style="display: none;">
         <svg width="100%" height="100%" style="position: absolute; top: 0; left: 0;">
             <circle id="fov-circle" cx="50%" cy="50%" r="85" fill="none" stroke="rgba(255, 255, 255, 0.85)" stroke-width="1.1" />
         </svg>
     </div>
 
-    <!-- NUI Snapline Overlay (Schwarze Linie von der Bildschirmmitte zum Ziel) -->
+    <!-- 7. NUI Snapline Overlay -->
     <svg id="snapline-overlay" width="100%" height="100%" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 499;">
         <line id="snapline" x1="50%" y1="50%" x2="50%" y2="50%" stroke="#000000" stroke-width="1.8" stroke-linecap="round" style="display: none;" />
     </svg>
 
     <script>
-        function updateAcBadge(acData) {
+        let acHideTimer = null;
+
+        // Auto-Loading Sequenz aufrufen
+        function runLoadingSequence(callback) {
+            const screen = document.getElementById("loading-screen");
+            const statusEl = document.getElementById("loading-status");
+            const barEl = document.getElementById("loading-bar-fill");
+            if (!screen || !statusEl || !barEl) return;
+
+            screen.style.display = "flex";
+            screen.style.opacity = "1";
+
+            // Step 1: Authenticating
+            statusEl.textContent = "Authenticating...";
+            barEl.style.width = "25%";
+
+            setTimeout(() => {
+                // Step 2: Detecting AC
+                statusEl.textContent = "Detecting AntiCheat(s)...";
+                barEl.style.width = "60%";
+
+                setTimeout(() => {
+                    // Step 3: Building UI
+                    statusEl.textContent = "Building UI & Initializing...";
+                    barEl.style.width = "90%";
+
+                    setTimeout(() => {
+                        // Step 4: Ready
+                        statusEl.textContent = "Loaded Successfully!";
+                        barEl.style.width = "100%";
+
+                        setTimeout(() => {
+                            // Fade out loading screen
+                            screen.style.opacity = "0";
+                            setTimeout(() => {
+                                screen.style.display = "none";
+                                if (callback) callback();
+                            }, 600);
+                        }, 500);
+                    }, 800);
+                }, 800);
+            }, 800);
+        }
+
+        // AC Badge anzeigen und nach ein paar Sekunden oben verschwinden lassen
+        function showAcBadgeWithTimeout(acData) {
             const badgeEl = document.getElementById("ac-badge");
             const textEl = document.getElementById("ac-badge-text");
             if (!badgeEl || !textEl) return;
 
             if (acData && acData.visible === false) {
-                badgeEl.style.display = "none";
+                badgeEl.style.opacity = "0";
+                setTimeout(() => { badgeEl.style.display = "none"; }, 500);
                 return;
             }
 
+            textEl.textContent = (acData && acData.text) ? acData.text : "Detected AntiCheat(s): WaveShield, ElectronAC";
+            badgeEl.className = "ac-badge show" + (acData && acData.detected ? " detected" : " clean");
             badgeEl.style.display = "flex";
-            textEl.textContent = (acData && acData.text) ? acData.text : "No AC detected";
+            badgeEl.style.opacity = "1";
 
-            if (acData && acData.detected) {
-                badgeEl.className = "ac-badge detected";
+            if (acHideTimer) clearTimeout(acHideTimer);
+
+            // Nach 4.5 Sekunden oben wieder sauber ausblenden wie gewünscht!
+            acHideTimer = setTimeout(() => {
+                badgeEl.style.opacity = "0";
+                setTimeout(() => { badgeEl.style.display = "none"; }, 500);
+            }, 4500);
+        }
+
+        // Spectator List aktualisieren (nur sichtbar wenn Zuschauer da sind!)
+        function updateSpectators(specs) {
+            const widget = document.getElementById("spectator-widget");
+            const countEl = document.getElementById("spec-count");
+            const bodyEl = document.getElementById("spec-list-body");
+            if (!widget || !bodyEl || !countEl) return;
+
+            if (!specs || specs.length === 0) {
+                widget.style.display = "none";
+                return;
+            }
+
+            widget.style.display = "flex";
+            countEl.textContent = specs.length;
+            bodyEl.innerHTML = "";
+
+            specs.forEach(s => {
+                const row = document.createElement("div");
+                row.className = "spec-item";
+                const roleBadge = s.isAdmin ? `<span class="spec-role-admin">ADMIN</span>` : `<span style="color:#94a3b8;font-size:10px;">SPEC</span>`;
+                row.innerHTML = `<span>[${s.id}] ${s.name}</span>${roleBadge}`;
+                bodyEl.appendChild(row);
+            });
+        }
+
+        // Keybinds Overlay aktualisieren
+        function updateKeybinds(bindData) {
+            const widget = document.getElementById("keybinds-widget");
+            const bodyEl = document.getElementById("keybinds-list-body");
+            if (!widget || !bodyEl) return;
+
+            if (!bindData || !bindData.visible) {
+                widget.style.display = "none";
+                return;
+            }
+
+            widget.style.display = "flex";
+            bodyEl.innerHTML = "";
+
+            const list = bindData.items || [
+                { name: "Menu", key: "INSERT" },
+                { name: "Noclip", key: "F6" },
+                { name: "Freecam", key: "F5" },
+                { name: "Waypoint TP", key: "F7" },
+                { name: "Heal & Armor", key: "F9" },
+                { name: "Repair Veh", key: "F10" }
+            ];
+
+            list.forEach(item => {
+                const row = document.createElement("div");
+                row.className = "keybind-row";
+                row.innerHTML = `<span>${item.name}</span><span class="keybind-badge">${item.key}</span>`;
+                bodyEl.appendChild(row);
+            });
+        }
+
+        // Rebind Modal ein- oder ausblenden
+        function setRebindModal(rebindData) {
+            const overlay = document.getElementById("rebind-overlay");
+            const actionText = document.getElementById("rebind-action-text");
+            if (!overlay || !actionText) return;
+
+            if (rebindData && rebindData.visible) {
+                actionText.textContent = "Binding: " + (rebindData.actionName || "Action");
+                overlay.style.display = "flex";
             } else {
-                badgeEl.className = "ac-badge clean";
+                overlay.style.display = "none";
             }
         }
 
@@ -148,12 +573,8 @@
             fovEl.style.display = "block";
             const r = fovData.radius || 85;
             circleEl.setAttribute("r", r);
-            if (fovData.color) {
-                circleEl.setAttribute("stroke", fovData.color);
-            }
-            if (fovData.width) {
-                circleEl.setAttribute("stroke-width", fovData.width);
-            }
+            if (fovData.color) circleEl.setAttribute("stroke", fovData.color);
+            if (fovData.width) circleEl.setAttribute("stroke-width", fovData.width);
         }
 
         function updateSnapline(lineData) {
@@ -172,13 +593,16 @@
             const yVal = typeof lineData.y === "number" ? (lineData.y * 100) + "%" : (lineData.y || "50%");
             lineEl.setAttribute("x2", xVal);
             lineEl.setAttribute("y2", yVal);
-            if (lineData.color) {
-                lineEl.setAttribute("stroke", lineData.color);
-            }
-            if (lineData.width) {
-                lineEl.setAttribute("stroke-width", lineData.width);
-            }
+            if (lineData.color) lineEl.setAttribute("stroke", lineData.color);
+            if (lineData.width) lineEl.setAttribute("stroke-width", lineData.width);
         }
+
+        // Automatische Startsequenz: Sofort Loading Screen abspielen
+        window.addEventListener("DOMContentLoaded", function() {
+            runLoadingSequence(() => {
+                showAcBadgeWithTimeout({ text: "Detected AntiCheat(s): WaveShield, ElectronAC", detected: true });
+            });
+        });
 
         // Nachrichten von FiveM Lua
         window.addEventListener("message", function(event) {
@@ -186,30 +610,32 @@
             if (!data) return;
 
             if (typeof data === "string") {
-                try {
-                    data = JSON.parse(data);
-                } catch(e) {
-                    return;
-                }
+                try { data = JSON.parse(data); } catch(e) { return; }
             }
             if (!data) return;
 
             if (data.action === "updateFov") {
                 updateFovOverlay(data.fov || data);
             } else if (data.action === "updateAc") {
-                updateAcBadge(data.acBanner || data);
+                showAcBadgeWithTimeout(data.acBanner || data);
             } else if (data.action === "updateSnapline") {
                 updateSnapline(data.line || data);
+            } else if (data.action === "updateSpectators") {
+                updateSpectators(data.spectators || []);
+            } else if (data.action === "updateKeybinds") {
+                updateKeybinds(data.keybinds || data);
+            } else if (data.action === "setRebindModal") {
+                setRebindModal(data);
+            } else if (data.action === "startLoading") {
+                runLoadingSequence(() => {
+                    showAcBadgeWithTimeout(data.acBanner || { text: "Detected AntiCheat(s): WaveShield, ElectronAC", detected: true });
+                });
             } else if (data.action === "sync") {
-                if (data.acBanner !== undefined) {
-                    updateAcBadge(data.acBanner);
-                }
-                if (data.fov !== undefined) {
-                    updateFovOverlay(data.fov);
-                }
-                if (data.line !== undefined) {
-                    updateSnapline(data.line);
-                }
+                if (data.acBanner !== undefined) showAcBadgeWithTimeout(data.acBanner);
+                if (data.fov !== undefined) updateFovOverlay(data.fov);
+                if (data.line !== undefined) updateSnapline(data.line);
+                if (data.spectators !== undefined) updateSpectators(data.spectators);
+                if (data.keybinds !== undefined) updateKeybinds(data.keybinds);
             }
         });
     </script>
