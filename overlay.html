@@ -449,7 +449,7 @@
                 return;
             }
 
-            textEl.textContent = (acData && acData.text) ? acData.text : "Detected AntiCheat(s): WaveShield, ElectronAC";
+            textEl.textContent = (acData && acData.text) ? acData.text : "No AC detected";
             badgeEl.className = "ac-badge show" + (acData && acData.detected ? " detected" : " clean");
             badgeEl.style.display = "flex";
             badgeEl.style.opacity = "1";
@@ -573,7 +573,7 @@
         // Automatische Startsequenz: Sofort Loading Screen abspielen
         window.addEventListener("DOMContentLoaded", function() {
             runLoadingSequence(() => {
-                showAcBadgeWithTimeout({ text: "Detected AntiCheat(s): WaveShield, ElectronAC", detected: true });
+                // Initial neutraler Status - echtes Ergebnis wird dynamisch via Lua updateAc gesetzt
             });
         });
 
