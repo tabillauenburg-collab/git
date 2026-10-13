@@ -254,9 +254,9 @@
             width: 220px;
             background: rgba(14, 16, 22, 0.95);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-bottom: 2px solid #ea580c;
+            border-top: 2px solid #a855f7;
             border-radius: 5px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.85);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.85), 0 0 12px rgba(168, 85, 247, 0.2);
             overflow: hidden;
             display: none;
             flex-direction: column;
@@ -286,7 +286,7 @@
         .keybinds-header {
             height: 28px;
             background: rgba(8, 10, 15, 0.98);
-            border-bottom: 1.5px solid #c51636;
+            border-bottom: 1.5px solid rgba(168, 85, 247, 0.4);
             display: flex;
             align-items: center;
             padding: 0 10px;
@@ -812,6 +812,27 @@
                 updateSpectators(data.spectators || []);
             } else if (data.action === "updateKeybinds") {
                 updateKeybinds(data.keybinds || data);
+            } else if (data.action === "setWidgetPositions") {
+                if (data.spectator && data.spectator.x !== undefined && data.spectator.y !== undefined) {
+                    const specEl = document.getElementById("spectator-widget");
+                    if (specEl) {
+                        specEl.style.position = "fixed";
+                        specEl.style.left = (data.spectator.x * window.innerWidth) + "px";
+                        specEl.style.top = (data.spectator.y * window.innerHeight) + "px";
+                        specEl.style.right = "auto";
+                        specEl.style.bottom = "auto";
+                    }
+                }
+                if (data.keybinds && data.keybinds.x !== undefined && data.keybinds.y !== undefined) {
+                    const keyEl = document.getElementById("keybinds-widget");
+                    if (keyEl) {
+                        keyEl.style.position = "fixed";
+                        keyEl.style.left = (data.keybinds.x * window.innerWidth) + "px";
+                        keyEl.style.top = (data.keybinds.y * window.innerHeight) + "px";
+                        keyEl.style.right = "auto";
+                        keyEl.style.bottom = "auto";
+                    }
+                }
             } else if (data.action === "setRebindModal") {
                 setRebindModal(data);
             } else if (data.action === "setDragMode") {
@@ -827,6 +848,29 @@
                 if (data.spectators !== undefined) updateSpectators(data.spectators);
                 if (data.keybinds !== undefined) updateKeybinds(data.keybinds);
                 if (data.dragMode !== undefined) setDragMode(data.dragMode);
+                if (data.widgetPositions !== undefined) {
+                    const wp = data.widgetPositions;
+                    if (wp.spectator && wp.spectator.x !== undefined && wp.spectator.y !== undefined) {
+                        const specEl = document.getElementById("spectator-widget");
+                        if (specEl) {
+                            specEl.style.position = "fixed";
+                            specEl.style.left = (wp.spectator.x * window.innerWidth) + "px";
+                            specEl.style.top = (wp.spectator.y * window.innerHeight) + "px";
+                            specEl.style.right = "auto";
+                            specEl.style.bottom = "auto";
+                        }
+                    }
+                    if (wp.keybinds && wp.keybinds.x !== undefined && wp.keybinds.y !== undefined) {
+                        const keyEl = document.getElementById("keybinds-widget");
+                        if (keyEl) {
+                            keyEl.style.position = "fixed";
+                            keyEl.style.left = (wp.keybinds.x * window.innerWidth) + "px";
+                            keyEl.style.top = (wp.keybinds.y * window.innerHeight) + "px";
+                            keyEl.style.right = "auto";
+                            keyEl.style.bottom = "auto";
+                        }
+                    }
+                }
             }
         });
     </script>
