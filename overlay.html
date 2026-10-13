@@ -217,56 +217,126 @@
         }
 
         /* ===================================================
-           4. KEYBINDS INFO OVERLAY (LINKS OBEN)
+           4. RIGHT SIDEBAR CONTAINER & KEYBINDS WIDGET (1:1 SCREENSHOT 2)
            =================================================== */
-        #keybinds-widget {
+        #right-widgets-container {
             position: fixed;
-            top: 70px;
-            left: 24px;
-            width: 215px;
+            top: 60px;
+            right: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 10000;
+            pointer-events: none;
+        }
+
+        #spectator-widget {
+            position: relative;
+            top: auto;
+            right: auto;
+            width: 220px;
             background: rgba(13, 15, 22, 0.94);
             border: 1px solid rgba(255, 255, 255, 0.11);
-            border-top: 2px solid #a855f7;
+            border-top: 2px solid #ef4444; /* Rot fuer Spectator-Alarm */
             border-radius: 6px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8), 0 0 12px rgba(239, 68, 68, 0.25);
             overflow: hidden;
             display: none;
             flex-direction: column;
-            z-index: 10000;
             pointer-events: none;
             transition: opacity 0.3s ease;
+        }
+
+        #keybinds-widget {
+            position: relative;
+            top: auto;
+            left: auto;
+            width: 220px;
+            background: rgba(14, 16, 22, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-bottom: 2px solid #ea580c;
+            border-radius: 5px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.85);
+            overflow: hidden;
+            display: none;
+            flex-direction: column;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .keybinds-header {
+            height: 28px;
+            background: rgba(8, 10, 15, 0.98);
+            border-bottom: 1.5px solid #c51636;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: #ffffff;
+        }
+
+        .keybinds-body {
+            padding: 6px 10px 8px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
         }
 
         .keybind-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            font-size: 11px;
-            color: #cbd5e1;
-            font-weight: 500;
+            font-size: 11.5px;
+            line-height: 1.4;
         }
 
-        .keybind-badge {
-            background: rgba(168, 85, 247, 0.16);
-            color: #c084fc;
-            border: 1px solid rgba(168, 85, 247, 0.45);
-            border-radius: 3px;
-            padding: 1px 6px;
-            font-weight: 700;
-            font-size: 10.5px;
+        .keybind-label {
+            color: #f1f5f9;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 105px;
+        }
+
+        .keybind-right {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 7px;
+            flex-shrink: 0;
+        }
+
+        .keybind-key {
+            color: #cbd5e1;
+            font-weight: 600;
+            font-size: 11.5px;
+        }
+
+        .keybind-status {
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.3px;
+        }
+
+        .keybind-status.status-off {
+            color: #ef4444;
+        }
+
+        .keybind-status.status-on {
+            color: #22c55e;
         }
 
         /* ===================================================
-           5. INTERACTIVE "ENTER A KEY" MODAL (GRAUER HINTERGRUND)
+           5. REBIND MODAL (UNTEN IN DER MITTE - 1:1 SCREENSHOTS 1 & 3)
            =================================================== */
         #rebind-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(6, 8, 12, 0.68);
-            backdrop-filter: blur(4px);
+            bottom: 35px;
+            left: 50%;
+            transform: translateX(-50%);
             display: none;
             align-items: center;
             justify-content: center;
@@ -275,49 +345,62 @@
             transition: opacity 0.2s ease;
         }
 
-        .rebind-box {
-            width: 320px;
-            background: #0f1118;
+        .rebind-card {
+            min-width: 440px;
+            height: 82px;
+            background: #111216;
             border: 1px solid rgba(255, 255, 255, 0.14);
-            border-top: 2.5px solid #a855f7;
-            border-radius: 10px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.95), 0 0 25px rgba(168, 85, 247, 0.28);
-            padding: 24px 20px;
-            text-align: center;
+            border-radius: 6px;
+            box-shadow: 0 10px 32px rgba(0, 0, 0, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 0 28px 0 28px;
+        }
+
+        .rebind-accent-bar {
+            position: absolute;
+            left: 14px;
+            top: 18px;
+            bottom: 18px;
+            width: 3.5px;
+            background: #c51636;
+            border-radius: 2px;
+        }
+
+        .rebind-logo {
+            position: absolute;
+            right: 14px;
+            top: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.95;
+        }
+
+        .rebind-content {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 12px;
+            justify-content: center;
+            text-align: center;
+            gap: 7px;
+            width: 100%;
         }
 
         .rebind-title {
-            font-size: 15px;
-            font-weight: 800;
-            letter-spacing: 1.2px;
-            color: #ffffff;
-            text-transform: uppercase;
-        }
-
-        .rebind-action-name {
-            font-size: 13px;
+            font-size: 14.5px;
             font-weight: 700;
-            color: #c084fc;
-            background: rgba(168, 85, 247, 0.12);
-            border: 1px solid rgba(168, 85, 247, 0.35);
-            padding: 5px 14px;
-            border-radius: 5px;
+            letter-spacing: 0.2px;
+            color: #ffffff;
         }
 
-        .rebind-subtext {
+        .rebind-subtitle {
             font-size: 11.5px;
-            color: #94a3b8;
-            line-height: 1.4;
-        }
-
-        .rebind-hint {
-            font-size: 10.5px;
-            color: #64748b;
-            margin-top: 4px;
+            font-weight: 500;
+            letter-spacing: 0.1px;
+            color: #cbd5e1;
         }
 
         /* ===================================================
@@ -349,34 +432,44 @@
         </div>
     </div>
 
-    <!-- 3. Spectator List Widget (Rechts oben - Nur sichtbar wenn Spectator anwesend) -->
-    <div id="spectator-widget">
-        <div class="widget-header">
-            <span>Spectators (<span id="spec-count">0</span>)</span>
-            <div class="widget-dot-red"></div>
+    <!-- RECHTS: CONTAINER FUER SPECTATOR LIST & KEYBINDS WIDGET -->
+    <div id="right-widgets-container">
+        <!-- 3. Spectator List Widget (Rechts oben - Nur sichtbar wenn Spectator anwesend) -->
+        <div id="spectator-widget">
+            <div class="widget-header">
+                <span>Spectators (<span id="spec-count">0</span>)</span>
+                <div class="widget-dot-red"></div>
+            </div>
+            <div class="widget-body" id="spec-list-body">
+                <!-- Dynamisch aus Lua befüllt -->
+            </div>
         </div>
-        <div class="widget-body" id="spec-list-body">
-            <!-- Dynamisch aus Lua befüllt -->
+
+        <!-- 4. Keybinds Info Overlay (1:1 Screenshot 2) -->
+        <div id="keybinds-widget">
+            <div class="keybinds-header">
+                <span>Keybinds</span>
+            </div>
+            <div class="keybinds-body" id="keybinds-list-body">
+                <!-- Dynamisch befüllt -->
+            </div>
         </div>
     </div>
 
-    <!-- 4. Keybinds Info Overlay (Links oben) -->
-    <div id="keybinds-widget">
-        <div class="widget-header">
-            <span>Keybinds</span>
-        </div>
-        <div class="widget-body" id="keybinds-list-body">
-            <!-- Dynamisch befüllt -->
-        </div>
-    </div>
-
-    <!-- 5. Interactive "Enter a Key" Modal -->
+    <!-- 5. Interactive Rebind Modal (Unten in der Mitte - 1:1 Screenshots 1 & 3) -->
     <div id="rebind-overlay">
-        <div class="rebind-box">
-            <div class="rebind-title">Enter a Key</div>
-            <div class="rebind-action-name" id="rebind-action-text">Action: Toggle Noclip</div>
-            <div class="rebind-subtext">Drücke eine beliebige Taste oder Maustaste (inkl. Seitentasten M4/M5)</div>
-            <div class="rebind-hint">[ESC] zum Abbrechen</div>
+        <div class="rebind-card">
+            <div class="rebind-accent-bar"></div>
+            <div class="rebind-logo">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                    <path d="M4 5L12 21L20 5H15.5L12 13.5L8.5 5H4Z" fill="white"/>
+                    <path d="M12 9L13.8 13H10.2L12 9Z" fill="#111216"/>
+                </svg>
+            </div>
+            <div class="rebind-content">
+                <div class="rebind-title" id="rebind-title-text">Press a key to bind for the menu...</div>
+                <div class="rebind-subtitle" id="rebind-subtitle-text">Press Escape to Cancel</div>
+            </div>
         </div>
     </div>
 
@@ -488,13 +581,14 @@
             });
         }
 
-        // Keybinds Overlay aktualisieren
+        // Keybinds Overlay aktualisieren (1:1 Screenshot 2)
         function updateKeybinds(bindData) {
             const widget = document.getElementById("keybinds-widget");
             const bodyEl = document.getElementById("keybinds-list-body");
             if (!widget || !bodyEl) return;
 
-            if (!bindData || !bindData.visible) {
+            // Keine Standard-Binds anzeigen wenn keine gebunden sind!
+            if (!bindData || !bindData.visible || !bindData.items || bindData.items.length === 0) {
                 widget.style.display = "none";
                 return;
             }
@@ -502,34 +596,60 @@
             widget.style.display = "flex";
             bodyEl.innerHTML = "";
 
-            const list = bindData.items || [
-                { name: "Menu", key: "INSERT" },
-                { name: "Noclip", key: "F6" },
-                { name: "Freecam", key: "F5" },
-                { name: "Waypoint TP", key: "F7" },
-                { name: "Heal & Armor", key: "F9" },
-                { name: "Repair Veh", key: "F10" }
-            ];
-
-            list.forEach(item => {
+            bindData.items.forEach(item => {
                 const row = document.createElement("div");
                 row.className = "keybind-row";
-                row.innerHTML = `<span>${item.name}</span><span class="keybind-badge">${item.key}</span>`;
+
+                const label = document.createElement("span");
+                label.className = "keybind-label";
+                label.textContent = item.name || "Feature";
+
+                const right = document.createElement("div");
+                right.className = "keybind-right";
+
+                const key = document.createElement("span");
+                key.className = "keybind-key";
+                key.textContent = item.key || "";
+                right.appendChild(key);
+
+                if (item.isToggle) {
+                    const status = document.createElement("span");
+                    status.className = "keybind-status " + (item.active ? "status-on" : "status-off");
+                    status.textContent = item.active ? "ON" : "OFF";
+                    right.appendChild(status);
+                }
+
+                row.appendChild(label);
+                row.appendChild(right);
                 bodyEl.appendChild(row);
             });
         }
 
-        // Rebind Modal ein- oder ausblenden
+        // Rebind Modal ein- oder ausblenden (1:1 Screenshots 1 & 3)
         function setRebindModal(rebindData) {
             const overlay = document.getElementById("rebind-overlay");
-            const actionText = document.getElementById("rebind-action-text");
-            if (!overlay || !actionText) return;
+            const titleEl = document.getElementById("rebind-title-text");
+            const subtitleEl = document.getElementById("rebind-subtitle-text");
+            if (!overlay || !titleEl || !subtitleEl) return;
 
-            if (rebindData && rebindData.visible) {
-                actionText.textContent = "Binding: " + (rebindData.actionName || "Action");
-                overlay.style.display = "flex";
-            } else {
+            if (!rebindData || !rebindData.visible) {
                 overlay.style.display = "none";
+                return;
+            }
+
+            overlay.style.display = "flex";
+
+            if (rebindData.state === "selected") {
+                // Screenshot 1: "Selected: Key6 - Press Enter" / "Press another key to change or Escape to Cancel"
+                titleEl.textContent = "Selected: " + (rebindData.keyName || "Key") + " - Press Enter";
+                subtitleEl.textContent = "Press another key to change or Escape to Cancel";
+            } else {
+                // Screenshot 3: "Press a key to bind for the menu..." / "Press Escape to Cancel"
+                const actionLabel = (rebindData.actionName && rebindData.actionName.toLowerCase() === "toggle menu")
+                    ? "the menu"
+                    : (rebindData.actionName || "the menu");
+                titleEl.textContent = "Press a key to bind for " + actionLabel + "...";
+                subtitleEl.textContent = "Press Escape to Cancel";
             }
         }
 
