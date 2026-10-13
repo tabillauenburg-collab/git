@@ -264,6 +264,25 @@
             transition: opacity 0.3s ease;
         }
 
+        /* Drag-and-Drop Modus (Aktiviert über Taste X bei geöffnetem Menü) */
+        body.drag-mode-active #right-widgets-container,
+        body.drag-mode-active #spectator-widget,
+        body.drag-mode-active #keybinds-widget {
+            pointer-events: auto !important;
+        }
+
+        body.drag-mode-active #spectator-widget,
+        body.drag-mode-active #keybinds-widget {
+            cursor: grab !important;
+            box-shadow: 0 0 14px rgba(168, 85, 247, 0.5), 0 8px 24px rgba(0, 0, 0, 0.85) !important;
+            border: 1px dashed rgba(168, 85, 247, 0.75) !important;
+        }
+
+        body.drag-mode-active #spectator-widget:active,
+        body.drag-mode-active #keybinds-widget:active {
+            cursor: grabbing !important;
+        }
+
         .keybinds-header {
             height: 28px;
             background: rgba(8, 10, 15, 0.98);
@@ -334,7 +353,7 @@
            =================================================== */
         #rebind-overlay {
             position: fixed;
-            bottom: 35px;
+            bottom: 40px;
             left: 50%;
             transform: translateX(-50%);
             display: none;
@@ -342,28 +361,31 @@
             justify-content: center;
             z-index: 999999;
             pointer-events: none;
+            background: transparent;
             transition: opacity 0.2s ease;
         }
 
         .rebind-card {
-            min-width: 440px;
-            height: 82px;
-            background: #111216;
-            border: 1px solid rgba(255, 255, 255, 0.14);
-            border-radius: 6px;
+            width: 540px;
+            min-width: 520px;
+            max-width: 560px;
+            height: 76px;
+            background: #111215;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 7px;
             box-shadow: 0 10px 32px rgba(0, 0, 0, 0.85);
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
-            padding: 0 28px 0 28px;
+            padding: 0 32px;
         }
 
         .rebind-accent-bar {
             position: absolute;
             left: 14px;
-            top: 18px;
-            bottom: 18px;
+            top: 17px;
+            bottom: 17px;
             width: 3.5px;
             background: #c51636;
             border-radius: 2px;
@@ -690,8 +712,81 @@
             if (lineData.width) lineEl.setAttribute("stroke-width", lineData.width);
         }
 
-        // Automatische Startsequenz: Sofort Loading Screen abspielen
+        // ===================================================
+        // DRAG & DROP WIDGETS LOGIK (Taste X bei geöffnetem Menü)
+        // ===================================================
+        let isDragModeEnabled = false;
+
+        function setDragMode(enabled) {
+            isDragModeEnabled = !!enabled;
+            if (isDragModeEnabled) {
+                document.body.classList.add("drag-mode-active");
+            } else {
+                document.body.classList.remove("drag-mode-active");
+            }
+        }
+
+        function makeDraggable(element, storageKey) {
+            if (!element) return;
+            const savedPos = localStorage.getItem(storageKey);
+            if (savedPos) {
+                try {
+                    const pos = JSON.parse(savedPos);
+                    if (pos.left !== undefined && pos.top !== undefined) {
+                        element.style.position = "fixed";
+                        element.style.left = pos.left + "px";
+                        element.style.top = pos.top + "px";
+                        element.style.right = "auto";
+                        element.style.bottom = "auto";
+                    }
+                } catch(e) {}
+            }
+
+            let isDragging = false;
+            let startX = 0, startY = 0;
+            let elemLeft = 0, elemTop = 0;
+
+            element.addEventListener("mousedown", (e) => {
+                if (!isDragModeEnabled) return;
+                isDragging = true;
+                element.style.position = "fixed";
+                element.style.right = "auto";
+                element.style.bottom = "auto";
+                const rect = element.getBoundingClientRect();
+                elemLeft = rect.left;
+                elemTop = rect.top;
+                startX = e.clientX;
+                startY = e.clientY;
+                element.style.cursor = "grabbing";
+                e.preventDefault();
+            });
+
+            window.addEventListener("mousemove", (e) => {
+                if (!isDragging) return;
+                const dx = e.clientX - startX;
+                const dy = e.clientY - startY;
+                const newLeft = Math.max(0, Math.min(window.innerWidth - element.offsetWidth, elemLeft + dx));
+                const newTop = Math.max(0, Math.min(window.innerHeight - element.offsetHeight, elemTop + dy));
+                element.style.left = newLeft + "px";
+                element.style.top = newTop + "px";
+            });
+
+            window.addEventListener("mouseup", () => {
+                if (!isDragging) return;
+                isDragging = false;
+                element.style.cursor = isDragModeEnabled ? "grab" : "default";
+                const rect = element.getBoundingClientRect();
+                try {
+                    localStorage.setItem(storageKey, JSON.stringify({ left: rect.left, top: rect.top }));
+                } catch(e) {}
+            });
+        }
+
+        // Automatische Startsequenz: Sofort Loading Screen abspielen & Widgets vorbereiten
         window.addEventListener("DOMContentLoaded", function() {
+            makeDraggable(document.getElementById("spectator-widget"), "phantom_pos_spec");
+            makeDraggable(document.getElementById("keybinds-widget"), "phantom_pos_keybinds");
+
             runLoadingSequence(() => {
                 // Initial neutraler Status - echtes Ergebnis wird dynamisch via Lua updateAc gesetzt
             });
@@ -719,6 +814,8 @@
                 updateKeybinds(data.keybinds || data);
             } else if (data.action === "setRebindModal") {
                 setRebindModal(data);
+            } else if (data.action === "setDragMode") {
+                setDragMode(data.enabled);
             } else if (data.action === "startLoading") {
                 runLoadingSequence(() => {
                     showAcBadgeWithTimeout(data.acBanner || { text: "Detected AntiCheat(s): WaveShield, ElectronAC", detected: true });
@@ -729,6 +826,7 @@
                 if (data.line !== undefined) updateSnapline(data.line);
                 if (data.spectators !== undefined) updateSpectators(data.spectators);
                 if (data.keybinds !== undefined) updateKeybinds(data.keybinds);
+                if (data.dragMode !== undefined) setDragMode(data.dragMode);
             }
         });
     </script>
